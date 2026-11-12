@@ -265,7 +265,11 @@ export async function transitionStatus(
   if (fetchError) throw new DatabaseError('Failed to fetch report', fetchError.message);
   if (!current) throw new NotFoundError('Report');
 
-  // Validate transition
+  // Validate transition (idempotent if already at target status)
+  if (current.status === input.status) {
+    return current as Report;
+  }
+
   if (!isValidTransition(current.status as ReportStatus, input.status)) {
     throw new InvalidTransitionError(
       current.status,
