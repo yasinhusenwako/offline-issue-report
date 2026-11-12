@@ -18,7 +18,7 @@ export type ReportStatus =
   | 'Resolved'
   | 'Rejected';
 
-export type SyncState = 'Pending' | 'Synchronizing' | 'Synchronized' | 'Failed';
+export type SyncState = 'Pending' | 'Synchronizing' | 'Synchronized' | 'Failed' | 'Conflict';
 
 export interface LocationData {
   address: string;
@@ -28,7 +28,11 @@ export interface LocationData {
 }
 
 export interface ReportItem {
-  id: string; // e.g. "REP-2026-0104"
+  id: string; // Local ID e.g. "REP-2026-0104" or UUID
+  clientReportId?: string; // Stable UUID idempotency key for backend sync
+  serverId?: string; // Server-assigned UUID after sync
+  version?: number; // Optimistic concurrency version
+  conflictServerData?: Partial<ReportItem> & { version?: number; updatedAt?: string };
   title: string;
   category: ReportCategory;
   description: string;
@@ -58,10 +62,12 @@ export interface SyncQueueItem {
   reportId: string;
   action: SyncActionType;
   payload: Partial<ReportItem>;
+  userRole?: UserRole;
   createdAt: string;
   attempts: number;
   maxAttempts: number;
   lastAttemptAt?: string;
+  nextRetryAt?: string;
   status: SyncState;
   errorMessage?: string;
 }

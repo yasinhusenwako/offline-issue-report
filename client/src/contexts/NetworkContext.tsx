@@ -49,7 +49,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setActualOnline(true);
       if (!isSimulatingOffline) {
         // Trigger auto-sync when network returns
-        syncService.processQueue();
+        void syncService.syncAll();
       }
     };
 
@@ -66,10 +66,10 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, [isSimulatingOffline]);
 
-  // When simulated offline is toggled back to online, trigger queue
+  // Startup sync & periodic retry while active and online
   useEffect(() => {
     if (!isSimulatingOffline && actualOnline) {
-      syncService.processQueue();
+      return syncService.startAutoSync(30_000);
     }
   }, [isSimulatingOffline, actualOnline]);
 

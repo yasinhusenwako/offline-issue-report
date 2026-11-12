@@ -142,6 +142,12 @@ export const SyncBadge: React.FC<{ syncState: SyncState; showLabel?: boolean }> 
       border: 'border-red-300',
       icon: <AlertCircle className="w-3.5 h-3.5 text-red-700 shrink-0" aria-hidden="true" />,
     },
+    Conflict: {
+      text: 'text-orange-900 font-bold',
+      bg: 'bg-orange-50',
+      border: 'border-orange-400',
+      icon: <AlertCircle className="w-3.5 h-3.5 text-orange-700 shrink-0" aria-hidden="true" />,
+    },
   };
 
   const c = configs[syncState] || configs.Pending;

@@ -19,6 +19,7 @@ import { CATEGORIES, PRIORITIES, generateReportId } from '../utils/formatters';
 import { PriorityLevel, ReportCategory, ReportItem } from '../types';
 import { db } from '../db';
 import { syncService } from '../services/syncService';
+import { generateUuid } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNetwork } from '../contexts/NetworkContext';
 
@@ -167,6 +168,8 @@ export const CreateReportPage: React.FC = () => {
 
       const newReport: ReportItem = {
         id,
+        clientReportId: generateUuid(),
+        version: 1,
         title: data.title.trim(),
         category: data.category,
         description: data.description.trim(),

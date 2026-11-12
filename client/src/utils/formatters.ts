@@ -81,6 +81,8 @@ export function getSyncColor(sync: SyncState): {
       return { text: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' };
     case 'Failed':
       return { text: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200' };
+    case 'Conflict':
+      return { text: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-300' };
   }
 }
 

@@ -1,10 +1,56 @@
 import { ReportItem, SyncQueueItem, UserRole } from '../types';
 
 const API_BASE_URL =
-  (import.meta.env?.VITE_API_URL as string | undefined)?.replace(/\/+$/, '') ||
-  'http://localhost:4000/api';
+  (
+    (import.meta.env?.VITE_API_BASE_URL as string | undefined) ||
+    (import.meta.env?.VITE_API_URL as string | undefined) ||
+    'http://localhost:4000/api'
+  ).replace(/\/+$/, '');
 
+const REQUEST_TIMEOUT_MS = 15_000;
 const REPORT_META_KEY = 'infrasync_report_meta_map';
+
+export class ApiClientError extends Error {
+  public readonly statusCode: number;
+  public readonly code: string;
+  public readonly details?: unknown;
+
+  constructor(message: string, statusCode = 500, code = 'API_ERROR', details?: unknown) {
+    super(message);
+    this.name = 'ApiClientError';
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+  }
+}
+
+export interface ServerReport {
+  id: string;
+  client_report_id: string;
+  category: string;
+  description: string;
+  location: string;
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  status: 'Draft' | 'Submitted' | 'Assigned' | 'In Progress' | 'Resolved' | 'Rejected';
+  reported_at: string;
+  created_at: string;
+  updated_at: string;
+  assigned_to: string | null;
+  resolved_at: string | null;
+  rejection_reason: string | null;
+  version: number;
+}
+
+export interface ServerActivity {
+  id: string;
+  report_id: string;
+  action_type: string;
+  previous_value: Record<string, unknown> | null;
+  new_value: Record<string, unknown> | null;
+  description: string;
+  performed_by: string | null;
+  created_at: string;
+}
 
 interface ReportSyncMeta {
   clientReportId: string;
@@ -12,7 +58,7 @@ interface ReportSyncMeta {
   version: number;
 }
 
-function generateUuid(): string {
+export function generateUuid(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
@@ -40,19 +86,22 @@ function saveMetaMap(map: Record<string, ReportSyncMeta>): void {
   }
 }
 
-function getOrCreateMeta(localReportId: string): ReportSyncMeta {
+export function getOrCreateReportMeta(localReportId: string, existingClientReportId?: string): ReportSyncMeta {
   const map = getMetaMap();
   if (!map[localReportId]) {
     map[localReportId] = {
-      clientReportId: generateUuid(),
+      clientReportId: existingClientReportId || generateUuid(),
       version: 1,
     };
+    saveMetaMap(map);
+  } else if (existingClientReportId && map[localReportId].clientReportId !== existingClientReportId) {
+    map[localReportId].clientReportId = existingClientReportId;
     saveMetaMap(map);
   }
   return map[localReportId];
 }
 
-function updateMeta(localReportId: string, patch: Partial<ReportSyncMeta>): ReportSyncMeta {
+export function updateReportMeta(localReportId: string, patch: Partial<ReportSyncMeta>): ReportSyncMeta {
   const map = getMetaMap();
   const current = map[localReportId] ?? {
     clientReportId: generateUuid(),
@@ -65,8 +114,8 @@ function updateMeta(localReportId: string, patch: Partial<ReportSyncMeta>): Repo
 }
 
 /**
- * API Service Layer:
- * Connects the offline-first client to the InfraSync Express + Supabase backend.
+ * Centralized API Client:
+ * Connects the offline-first React client to the InfraSync Express + Supabase backend.
  */
 class ApiService {
   private getSettings() {
@@ -96,43 +145,78 @@ class ApiService {
 
   private async checkSimulatedNetworkConditions() {
     const settings = this.getSettings();
-    if (settings.simulateOffline || !navigator.onLine) {
-      throw new Error('Network request failed: Device is offline or server is unreachable.');
+    if (settings.simulateOffline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+      throw new ApiClientError(
+        'Network request failed: Device is offline or server is unreachable.',
+        0,
+        'OFFLINE'
+      );
+    }
+    if (settings.simulateFailureRatePercent > 0 && Math.random() * 100 < settings.simulateFailureRatePercent) {
+      throw new ApiClientError(
+        '503 Service Unavailable: Simulated synchronization failure. Queued for retry.',
+        503,
+        'SIMULATED_FAILURE'
+      );
     }
   }
 
   private async request<T>(
     path: string,
-    options: RequestInit & { role?: UserRole } = {}
+    options: RequestInit & { role?: UserRole; timeoutMs?: number } = {}
   ): Promise<T> {
     await this.checkSimulatedNetworkConditions();
 
-    const { role, headers, ...fetchOptions } = options;
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      ...fetchOptions,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Dev-Role': this.getCurrentRole(role),
-        ...(headers || {}),
-      },
-    });
+    const { role, headers, timeoutMs = REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    const json = await response.json().catch(() => null);
+    try {
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        ...fetchOptions,
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Dev-Role': this.getCurrentRole(role),
+          ...(headers || {}),
+        },
+      });
 
-    if (!response.ok) {
-      const errMsg =
-        json?.error?.message ||
-        `Request failed with status ${response.status}`;
-      const details = Array.isArray(json?.error?.details)
-        ? json.error.details.map((d: { field?: string; message?: string }) => `${d.field}: ${d.message}`).join('; ')
-        : '';
-      throw new Error(details ? `${errMsg} (${details})` : errMsg);
+      const json = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const errMsg = json?.error?.message || `Request failed with status ${response.status}`;
+        const errCode = json?.error?.code || 'API_ERROR';
+        const details = json?.error?.details;
+        const formattedDetails = Array.isArray(details)
+          ? details.map((d: { field?: string; message?: string }) => `${d.field}: ${d.message}`).join('; ')
+          : '';
+
+        throw new ApiClientError(
+          formattedDetails ? `${errMsg} (${formattedDetails})` : errMsg,
+          response.status,
+          errCode,
+          details
+        );
+      }
+
+      return json as T;
+    } catch (err: unknown) {
+      if (err instanceof ApiClientError) throw err;
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        throw new ApiClientError(`Request timed out after ${timeoutMs / 1000}s`, 408, 'TIMEOUT');
+      }
+      throw new ApiClientError(
+        err instanceof Error ? err.message : 'Network error occurred',
+        0,
+        'NETWORK_ERROR'
+      );
+    } finally {
+      clearTimeout(timer);
     }
-
-    return json as T;
   }
 
-  private toServerReportPayload(report: Partial<ReportItem>, clientReportId: string) {
+  public toServerReportPayload(report: Partial<ReportItem>, clientReportId: string) {
     const locationStr =
       report.location?.address?.trim() ||
       (report.location?.latitude != null && report.location?.longitude != null
@@ -158,59 +242,101 @@ class ApiService {
     };
   }
 
+  async fetchReports(limit = 100): Promise<ServerReport[]> {
+    const res = await this.request<{ success: boolean; data: ServerReport[] }>(
+      `/reports?limit=${limit}`,
+      { method: 'GET' }
+    );
+    return res.data ?? [];
+  }
+
+  async fetchReportById(serverId: string): Promise<ServerReport & { activity?: ServerActivity[] }> {
+    const res = await this.request<{
+      success: boolean;
+      data: ServerReport & { activity?: ServerActivity[] };
+    }>(`/reports/${serverId}`, { method: 'GET' });
+    return res.data;
+  }
+
+  async syncBatch(
+    reports: Array<ReturnType<ApiService['toServerReportPayload']>>,
+    role?: UserRole
+  ): Promise<{
+    total: number;
+    created: number;
+    duplicates: number;
+    failed: number;
+    results: Array<{
+      client_report_id: string;
+      status: 'created' | 'duplicate' | 'failed';
+      server_report_id?: string;
+      error?: string;
+    }>;
+  }> {
+    const res = await this.request<{
+      success: boolean;
+      data: {
+        total: number;
+        created: number;
+        duplicates: number;
+        failed: number;
+        results: Array<{
+          client_report_id: string;
+          status: 'created' | 'duplicate' | 'failed';
+          server_report_id?: string;
+          error?: string;
+        }>;
+      };
+    }>('/sync/reports', {
+      method: 'POST',
+      role,
+      body: JSON.stringify({ reports }),
+    });
+    return res.data;
+  }
+
   /**
    * Synchronize a queued item to the remote backend
    */
   async syncReport(
     queueItem: SyncQueueItem,
     role?: UserRole
-  ): Promise<{ success: boolean; remoteId: string; syncedAt: string }> {
-    const meta = getOrCreateMeta(queueItem.reportId);
+  ): Promise<{ success: boolean; remoteId: string; version: number; syncedAt: string }> {
     const payload = queueItem.payload;
+    const meta = getOrCreateReportMeta(queueItem.reportId, payload.clientReportId);
+    const effectiveRole = role || queueItem.userRole;
+    let serverId = payload.serverId || meta.serverId;
+    let version = payload.version ?? meta.version ?? 1;
 
     // 1. Create / ensure report exists on server via idempotent sync endpoint
-    if (queueItem.action === 'create' || !meta.serverId) {
+    if (queueItem.action === 'create' || !serverId) {
       const serverPayload = this.toServerReportPayload(payload, meta.clientReportId);
+      const batchData = await this.syncBatch([serverPayload], effectiveRole);
+      const itemResult = batchData.results[0];
 
-      const syncRes = await this.request<{
-        success: boolean;
-        data: {
-          results: Array<{
-            client_report_id: string;
-            status: 'created' | 'duplicate' | 'failed';
-            server_report_id?: string;
-            error?: string;
-          }>;
-        };
-      }>('/sync/reports', {
-        method: 'POST',
-        role,
-        body: JSON.stringify({ reports: [serverPayload] }),
-      });
-
-      const itemResult = syncRes.data.results[0];
       if (!itemResult || itemResult.status === 'failed' || !itemResult.server_report_id) {
-        throw new Error(itemResult?.error || 'Failed to synchronize report');
+        throw new ApiClientError(
+          itemResult?.error || 'Failed to synchronize report',
+          422,
+          'SYNC_FAILED'
+        );
       }
 
-      const updatedMeta = updateMeta(queueItem.reportId, {
-        serverId: itemResult.server_report_id,
-        version: meta.version || 1,
+      serverId = itemResult.server_report_id;
+      const updated = updateReportMeta(queueItem.reportId, {
+        serverId,
+        version,
       });
 
-      // If this was originally an update/status_change for an unsynced report,
-      // fetch latest version so follow-up calls stay in sync
       if (queueItem.action === 'create') {
         return {
           success: true,
-          remoteId: updatedMeta.serverId!,
+          remoteId: updated.serverId!,
+          version: updated.version,
           syncedAt: new Date().toISOString(),
         };
       }
     }
-
-    const activeMeta = getOrCreateMeta(queueItem.reportId);
-    const serverId = activeMeta.serverId!;
 
     // 2. Handle assignment / field updates
     if (queueItem.action === 'update') {
@@ -220,30 +346,32 @@ class ApiService {
           data: { id: string; version: number };
         }>(`/reports/${serverId}/assign`, {
           method: 'PATCH',
-          role: role || 'coordinator',
+          role: effectiveRole || 'coordinator',
           body: JSON.stringify({
             assigned_to: payload.assignedTo,
-            version: activeMeta.version,
+            version,
           }),
         });
-        updateMeta(queueItem.reportId, { version: assignRes.data.version });
+        version = assignRes.data.version;
+        updateReportMeta(queueItem.reportId, { serverId, version });
       } else {
-        const serverPayload = this.toServerReportPayload(payload, activeMeta.clientReportId);
+        const serverPayload = this.toServerReportPayload(payload, meta.clientReportId);
         const patchRes = await this.request<{
           success: boolean;
           data: { id: string; version: number };
         }>(`/reports/${serverId}`, {
           method: 'PATCH',
-          role,
+          role: effectiveRole,
           body: JSON.stringify({
             category: serverPayload.category,
             description: serverPayload.description,
             location: serverPayload.location,
             priority: serverPayload.priority,
-            version: activeMeta.version,
+            version,
           }),
         });
-        updateMeta(queueItem.reportId, { version: patchRes.data.version });
+        version = patchRes.data.version;
+        updateReportMeta(queueItem.reportId, { serverId, version });
       }
     }
 
@@ -254,34 +382,33 @@ class ApiService {
         data: { id: string; version: number };
       }>(`/reports/${serverId}/status`, {
         method: 'PATCH',
-        role,
+        role: effectiveRole,
         body: JSON.stringify({
           status: payload.status,
           rejection_reason: payload.rejectionReason,
           notes: payload.resolutionNotes,
           reopen: payload.status === 'In Progress' ? true : undefined,
-          version: activeMeta.version,
+          version,
         }),
       });
-      updateMeta(queueItem.reportId, { version: statusRes.data.version });
+      version = statusRes.data.version;
+      updateReportMeta(queueItem.reportId, { serverId, version });
     }
 
     return {
       success: true,
-      remoteId: serverId,
+      remoteId: serverId!,
+      version,
       syncedAt: new Date().toISOString(),
     };
   }
 
-  /**
-   * Update report status on remote backend
-   */
   async updateRemoteStatus(
     reportId: string,
     status: string,
     notes?: string
   ): Promise<{ success: boolean; updatedAt: string }> {
-    const meta = getOrCreateMeta(reportId);
+    const meta = getOrCreateReportMeta(reportId);
     const targetId = meta.serverId || reportId;
 
     const res = await this.request<{
@@ -296,21 +423,18 @@ class ApiService {
       }),
     });
 
-    updateMeta(reportId, { version: res.data.version });
+    updateReportMeta(reportId, { version: res.data.version });
     return {
       success: true,
       updatedAt: res.data.updated_at || new Date().toISOString(),
     };
   }
 
-  /**
-   * Assign report on remote backend
-   */
   async assignRemoteReport(
     reportId: string,
     technician: string
   ): Promise<{ success: boolean; updatedAt: string }> {
-    const meta = getOrCreateMeta(reportId);
+    const meta = getOrCreateReportMeta(reportId);
     const targetId = meta.serverId || reportId;
 
     const res = await this.request<{
@@ -325,20 +449,18 @@ class ApiService {
       }),
     });
 
-    updateMeta(reportId, { version: res.data.version });
+    updateReportMeta(reportId, { version: res.data.version });
     return {
       success: true,
       updatedAt: res.data.updated_at || new Date().toISOString(),
     };
   }
 
-  /**
-   * Health ping to check remote server connectivity
-   */
   async ping(): Promise<{ status: 'healthy' | 'degraded'; latencyMs: number }> {
     const start = performance.now();
     const res = await this.request<{ status: string }>('/health', {
       method: 'GET',
+      timeoutMs: 5000,
     });
     const latency = Math.round(performance.now() - start);
     return {

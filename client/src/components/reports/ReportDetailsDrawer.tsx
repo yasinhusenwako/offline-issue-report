@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   MapPin,
@@ -112,10 +113,10 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
     if (onRefresh) onRefresh();
   };
 
-  return (
+  return createPortal(
     <>
       <div
-        className="fixed inset-0 z-40 flex items-end md:items-stretch md:justify-end"
+        className="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
@@ -127,15 +128,11 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
           aria-hidden="true"
         />
 
-        {/* Responsive Container: Bottom Sheet on Mobile (< md), Slide Drawer on Desktop (md+) */}
+        {/* Centered Modal Popup */}
         <div
           ref={drawerRef}
-          className="relative w-full md:max-w-xl bg-white max-h-[90vh] md:max-h-full md:h-full rounded-t-2xl md:rounded-none shadow-2xl flex flex-col z-10 border-t md:border-t-0 md:border-l border-slate-200 overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-200"
+          className="relative w-full max-w-2xl bg-white max-h-[90vh] rounded-2xl shadow-2xl flex flex-col z-10 border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         >
-          {/* Mobile Drag Indicator Handle */}
-          <div className="md:hidden pt-3 pb-1 flex justify-center bg-slate-50/70 border-b border-slate-100">
-            <div className="w-12 h-1 bg-slate-300 rounded-full" />
-          </div>
 
           {/* Header */}
           <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex items-start justify-between bg-slate-50/50 gap-3">
@@ -173,6 +170,65 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
 
           {/* Body Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs text-slate-700">
+            {/* Version Conflict Resolution Banner */}
+            {report.syncStatus === 'Conflict' && (
+              <div className="p-4 bg-orange-50 border border-orange-300 rounded-xl space-y-3">
+                <div className="flex items-center gap-2 font-bold text-orange-950 text-xs">
+                  <AlertCircle className="w-4 h-4 text-orange-600 shrink-0" />
+                  <span>Version Conflict Detected (HTTP 409)</span>
+                </div>
+                <p className="text-xs text-orange-900 leading-relaxed">
+                  {report.syncError || 'This report was modified on the server while you had pending local changes.'}
+                </p>
+                {report.conflictServerData && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
+                    <div className="p-2.5 bg-white border border-orange-200 rounded-lg space-y-1">
+                      <span className="font-bold text-slate-800 block">
+                        Local Version (v{report.version ?? 1})
+                      </span>
+                      <p className="text-slate-600">Status: <strong>{report.status}</strong></p>
+                      <p className="text-slate-600">Priority: <strong>{report.priority}</strong></p>
+                      <p className="text-slate-600 line-clamp-2">{report.description}</p>
+                    </div>
+                    <div className="p-2.5 bg-white border border-orange-200 rounded-lg space-y-1">
+                      <span className="font-bold text-slate-800 block">
+                        Server Version (v{report.conflictServerData.version ?? '?'})
+                      </span>
+                      <p className="text-slate-600">
+                        Status: <strong>{report.conflictServerData.status ?? report.status}</strong>
+                      </p>
+                      <p className="text-slate-600">
+                        Priority: <strong>{report.conflictServerData.priority ?? report.priority}</strong>
+                      </p>
+                      <p className="text-slate-600 line-clamp-2">
+                        {report.conflictServerData.description ?? report.description}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    onClick={async () => {
+                      await syncService.resolveConflict(report.id, 'keep_server');
+                      if (onRefresh) onRefresh();
+                    }}
+                    className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-lg font-semibold text-xs transition-colors"
+                  >
+                    Keep Server Version
+                  </button>
+                  <button
+                    onClick={async () => {
+                      await syncService.resolveConflict(report.id, 'keep_local');
+                      if (onRefresh) onRefresh();
+                    }}
+                    className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold text-xs transition-colors"
+                  >
+                    Keep My Local Changes &amp; Retry
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Quick Status and Priority Matrix */}
             <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
               <div>
@@ -377,6 +433,7 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
         onClose={() => setIsStatusModalOpen(false)}
         onSuccess={onRefresh}
       />
-    </>
+    </>,
+    document.body
   );
 };
