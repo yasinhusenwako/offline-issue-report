@@ -1,451 +1,685 @@
-# InfraSync — Offline-First Infrastructure Reporting & Maintenance Management System
+# Offline Infrastructure Reporting and Maintenance Management System
 
-An offline-first field reporting and maintenance management system designed for municipal and utility field crews operating in intermittent- or zero-connectivity environments. InfraSync pairs a local-first **React PWA (Dexie.js IndexedDB)** client with a resilient **Node.js Express TypeScript REST API** backed by **Supabase PostgreSQL**.
+A full-stack web application for reporting infrastructure problems, managing maintenance requests, and coordinating field operations — with offline-first reporting and automatic synchronization when internet connectivity is restored.
 
----
+## 1. Project Overview
 
-## Table of Contents
+The Offline Infrastructure Reporting and Maintenance Management System enables field workers to report infrastructure problems even when internet connectivity is unavailable.
 
-1. [System Architecture](#system-architecture)
-2. [Synchronization Strategy & Offline-First Guarantees](#synchronization-strategy--offline-first-guarantees)
-3. [Setup & Execution Instructions](#setup--execution-instructions)
-4. [Automated Test Execution](#automated-test-execution)
-5. [Seed & Demonstration Data](#seed--demonstration-data)
-6. [Design Decisions & Assumptions](#design-decisions--assumptions)
-7. [Known Limitations & Edge Cases](#known-limitations--edge-cases)
-8. [Manual QA Verification Checklist](#manual-qa-verification-checklist)
-9. [Project Retrospective: Time Spent & Future Improvements](#project-retrospective-time-spent--future-improvements)
-10. [AI & Development Tool Disclosure](#ai--development-tool-disclosure)
+Reports are stored locally on the user's device and automatically synchronized with the central database when a network connection becomes available.
 
----
+Coordinators can review submitted reports, assign maintenance personnel, monitor progress, and maintain a history of infrastructure-related activities.
 
-## System Architecture
+### Key Features
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        FIELD WORKER / COORDINATOR                      │
-│                                                                        │
-│   ┌────────────────────────────────────────────────────────────────┐   │
-│   │                      React 19 + Vite PWA                       │   │
-│   │                                                                │   │
-│   │  • Field Reporting Form (Zod + React Hook Form)                │   │
-│   │  • Coordinator Dashboard & Status Transition Matrix            │   │
-│   │  • Conflict Resolution Drawer (Local vs Server Diffs)          │   │
-│   │  • Role-based access (Field Worker / Coordinator views)        │   │
-│   └──────────────┬───────────────────────────────────▲─────────────┘   │
-│                  │ Instant write                     │ Reactive query  │
-│                  ▼                                   │                 │
-│   ┌────────────────────────────────────────────────────────────────┐   │
-│   │                  Dexie.js (Browser IndexedDB)                  │   │
-│   │                                                                │   │
-│   │  • reports (client_report_id, version, syncStatus, metadata)   │   │
-│   │  • syncQueue (pending creates, status transitions, updates)    │   │
-│   │  • activities (audit logs generated both offline & online)     │   │
-│   │  • settings (offline simulation toggles, retry backoff state)  │   │
-│   └──────────────┬───────────────────────────────────▲─────────────┘   │
-│                  │                                   │                 │
-│                  ▼                                   │                 │
-│   ┌──────────────────────────────────────────────────┴─────────────┐   │
-│   │                   Client Sync Engine & API Client              │   │
-│   │  • Exponential backoff (1s, 2s, 4s, 8s, 16s, capped at 60s)    │   │
-│   │  • Non-retryable error short-circuiting (400, 403, 404, 422)   │   │
-│   │  • Idempotent client_report_id deduplication                   │   │
-│   └──────────────────────────────┬─────────────────────────────────┘   │
-└──────────────────────────────────┼─────────────────────────────────────┘
-                                   │ HTTPS / REST (X-Dev-Role header)
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                    NODE.JS + EXPRESS BACKEND API                       │
-│                                                                        │
-│   ┌────────────────────────────────────────────────────────────────┐   │
-│   │  Security, Middlewares & Validation                            │   │
-│   │  • Helmet headers, CORS wildcard handling (*.vercel.app)       │   │
-│   │  • Rate limiting (200 requests / 15 min window)                │   │
-│   │  • Zod schema validation on route params, queries, and bodies  │   │
-│   │  • Dev role simulation middleware (`X-Dev-Role`)               │   │
-│   └──────────────────────────────┬─────────────────────────────────┘   │
-│                                  │                                     │
-│   ┌──────────────────────────────┴─────────────────────────────────┐   │
-│   │  Business Logic & State Machines                               │   │
-│   │  • /api/sync/reports — atomic batch insert/upsert              │   │
-│   │  • /api/reports/:id/status — strict transition state machine   │   │
-│   │  • /api/reports/:id/assign — coordinator assignment gate       │   │
-│   │  • /api/reports/:id (PATCH) — optimistic versioning (HTTP 409) │   │
-│   └──────────────────────────────┬─────────────────────────────────┘   │
-│                                  │ Service Role Key (Server-only)      │
-│                                  ▼                                     │
-│   ┌────────────────────────────────────────────────────────────────┐   │
-│   │                    SUPABASE POSTGRESQL                         │   │
-│   │  • public.reports (UUID id, client_report_id UNIQUE, version)  │   │
-│   │  • public.report_activity (immutable audit trail)              │   │
-│   │  • public.sync_operations (idempotency & operation ledger)     │   │
-│   └────────────────────────────────────────────────────────────────┘   │
-└────────────────────────────────────────────────────────────────────────┘
+- **Offline Reporting:** Create and save reports without an internet connection.
+- **Automatic Synchronization:** Synchronize locally stored reports when connectivity returns.
+- **Report Management:** Create, view, update, assign, and manage reports.
+- **Priority Assessment:** Classify reports as Low, Medium, High, or Critical.
+- **Infrastructure Categories:** Water Point, Equipment Damage, Service Interruption, Safety Concern, Maintenance Requirement, and Other.
+- **Report Tracking:** Monitor report progress through defined workflow statuses.
+- **Synchronization Monitoring:** Track Pending, Synchronized, Failed, and Conflict states.
+- **Activity History:** Maintain a record of report creation, updates, assignments, and status changes.
+- **Dashboard:** View report statistics and operational information.
+
+## 2. Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | React.js |
+| Build Tool | Vite |
+| Programming Language | TypeScript / JavaScript |
+| Styling | Tailwind CSS |
+| Backend | Node.js and Express.js |
+| Database | Supabase PostgreSQL |
+| Offline Storage | IndexedDB (Dexie.js, if implemented) |
+| API Communication | REST API |
+| Data Validation | Zod (if implemented) |
+| Version Control | Git and GitHub |
+
+## 3. System Architecture
+
+The system follows a client-server architecture with an offline-first data management strategy.
+
+```text
+                 FIELD WORKER
+                      |
+                      v
+             React Web Application
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
+       Online Mode         Offline Mode
+             |                 |
+             v                 v
+       Express API         IndexedDB
+             |                 |
+             |           Pending Reports
+             |                 |
+             |          Network Restored
+             |                 |
+             +--------+--------+
+                      |
+                      v
+               Express Backend
+                      |
+                      v
+              Supabase Database
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
+       Reports Table     Activity History
+             |
+             v
+       Coordinator Dashboard
 ```
 
----
+### Main Components
 
-## Synchronization Strategy & Offline-First Guarantees
+**Frontend**
 
-### 1. Offline-First Report Creation
-1. Every report created on the client immediately gets a UUID `clientReportId` (using `crypto.randomUUID()` with fallback).
-2. The form is validated using Zod against structural constraints (minimum description length, valid category, GPS/address validation).
-3. The report is written synchronously to **IndexedDB (`reports` table)** with `syncStatus: 'Pending'`, `version: 1`, and `isDraft: false`.
-4. A companion queue record is placed in **IndexedDB (`syncQueue` table)** with `action: 'create'`, `attempts: 0`, and `status: 'Pending'`.
-5. An offline activity record is added to `activities`.
-6. Immediate feedback is rendered to the user: the report appears on the dashboard and listing pages with an amber **Pending Sync** badge.
-7. If the browser is online, synchronization triggers in the background; if offline, data stays securely in IndexedDB across browser reloads or device restarts.
+- Provides the reporting form and dashboard.
+- Validates user input.
+- Stores reports locally when offline.
+- Displays synchronization status.
+- Communicates with the backend API when online.
 
-### 2. Automatic Synchronization Lifecycle
-Synchronization activates across multiple triggers:
-- **Application Startup**: Verifies network connectivity and flushes any pending queue items while pulling latest server state.
-- **Browser Online Event**: An event listener on `window.addEventListener('online', ...)` fires queue drain immediately upon network restoration.
-- **Background Interval**: A periodic poll (default 30 seconds, user-configurable in Settings) sweeps the queue for items whose retry delay has elapsed.
-- **Manual "Sync Now" Button**: Triggers both `syncService.processQueue(true)` (ignoring retry backoff) and `syncService.pullFromServer()`.
+**Offline Storage**
 
-### 3. Batch Ingestion & Idempotency (`POST /api/sync/reports`)
-- Pending creation items are grouped into batches (up to 50 items) and posted to `/api/sync/reports`.
-- The server checks `reports.client_report_id` before inserting. If the report was previously received:
-  - The server returns `{ status: 'duplicate', server_report_id: existing.id }`.
-  - The client treats this as a success, records the server UUID, and deletes the queue item.
-- If new, the server inserts the row, creates an initial `REPORT_CREATED` activity record, and returns `{ status: 'created', server_report_id: new.id }`.
+- Stores reports in the browser's IndexedDB database.
+- Maintains locally created reports until synchronization succeeds.
+- Tracks synchronization state and retry information.
+- Preserves local records across page refreshes and browser restarts, subject to browser storage availability.
 
-### 4. Exponential Backoff & Retry Logic
-- Failed network requests or server `5xx` errors trigger retry backoff calculated as:
-  $$\text{delayMs} = \min(60000, 1000 \times 2^{\text{attempts}} \pm \text{jitter})$$
-- After reaching `maxAttempts` (5 attempts), the item transitions to `status: 'Failed'` and is visually marked in red on the Sync Queue page with a manual retry option.
-- **Client Error Short-Circuiting**: HTTP `400` (Bad Request), `403` (Forbidden), `404` (Not Found), and `422` (Invalid State Transition) do **not** enter exponential retry loops; they immediately mark the item as `Failed` with the exact backend rejection reason, preventing console spam and server hammering.
+**Backend**
 
-### 5. Optimistic Concurrency & Conflict Resolution (`HTTP 409`)
-- Every report record has an integer `version` initialized at `1`.
-- When updating or transitioning status, the client sends `{ version: currentVersion }`.
-- If another user or coordinator updated the server record in the meantime, the database `version` will be higher, causing the server to return:
-  ```json
-  {
-    "success": false,
-    "error": {
-      "code": "CONFLICT",
-      "message": "Version conflict: expected 3, got 2",
-      "details": { "serverVersion": 3, "clientVersion": 2 }
-    }
-  }
-  ```
-- **Conflict Handling Workflow**:
-  - The client captures the `409 Conflict` error and halts automatic syncing for that report.
-  - The report state in IndexedDB is updated to `syncStatus: 'Conflict'`.
-  - A conflict badge appears on the report with a **Resolve Conflict** action.
-  - The user opens a side-by-side comparison modal displaying their local modifications vs. the live server state.
-  - The user chooses between:
-    - **Keep Server Version**: Overwrites local record with server snapshot and increments local version.
-    - **Force Local Overwrite**: Refetches current server version number, re-applies local changes with `serverVersion`, and resubmits.
+- Provides REST API endpoints.
+- Validates incoming report data.
+- Processes report creation and updates.
+- Handles synchronization requests.
+- Enforces report workflow and coordinator permissions.
 
----
+**Database**
 
-## Setup & Execution Instructions
+Supabase PostgreSQL provides centralized storage for:
+
+- `reports`: Main infrastructure reports.
+- `report_activity`: Report activity and audit history.
+- `sync_operations`: Synchronization operation tracking.
+
+## 4. Report Workflow
+
+Reports follow the following lifecycle:
+
+```text
+Draft
+  |
+  v
+Submitted
+  |
+  v
+Assigned
+  |
+  v
+In Progress
+  |
+  v
+Resolved
+```
+
+A report may also be rejected during the applicable review stages.
+
+### Synchronization States
+
+| State | Description |
+|---|---|
+| Pending | Report is waiting to synchronize. |
+| Processing | Synchronization is currently underway. |
+| Synchronized | Report has been successfully stored on the server. |
+| Failed | Synchronization failed and may be retried. |
+| Conflict | A synchronization conflict requires resolution. |
+
+Report workflow status and synchronization status are separate concepts. For example, a report can be `Submitted` while its synchronization state is `Pending`.
+
+## 5. Project Structure
+
+The recommended project structure is:
+
+```text
+infrastructure-reporting-system/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   ├── database/
+│   │   ├── types/
+│   │   ├── utils/
+│   │   └── App.tsx
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── validators/
+│   │   └── server.ts
+│   ├── package.json
+│   └── .env
+│
+├── database/
+│   └── schema.sql
+│
+├── README.md
+└── .gitignore
+```
+
+*The structure above is a recommended organization. Update it to match the actual repository.*
+
+## 6. Installation and Setup
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher (v20+ recommended)
-- **npm**: v9.0.0 or higher
-- **Supabase Account**: A free Supabase project with PostgreSQL enabled
 
-### 1. Clone & Install Dependencies
+Install the following software:
+
+- Node.js (LTS version recommended).
+- npm.
+- Git.
+- Visual Studio Code or another code editor.
+- A Supabase account and project.
+
+Verify the installations:
+
 ```bash
-git clone https://github.com/yasinhusenwako/offline-issue-report.git
-cd offline-issue-report
+node --version
+npm --version
+git --version
+```
 
-# Install root, client, and server dependencies in one command
+### Step 1: Clone the Repository
+
+```bash
+git clone YOUR_REPOSITORY_URL
+cd infrastructure-reporting-system
+```
+
+### Step 2: Configure the Supabase Database
+
+1. Create a new project in Supabase.
+2. Open the SQL Editor.
+3. Execute the database schema from `database/schema.sql`.
+4. Verify that the following tables exist:
+
+```text
+reports
+report_activity
+sync_operations
+```
+
+5. Obtain the project URL and service-role key from your Supabase project settings.
+
+**Security:** The Supabase service-role key must only be used by the backend. Never expose it in frontend environment variables or commit it to GitHub.
+
+### Step 3: Configure the Backend
+
+Navigate to the backend directory:
+
+```bash
+cd backend
 npm install
 ```
 
-### 2. Configure Backend Environment
-Create `server/.env` using the provided template:
-```bash
-cp server/.env.example server/.env
-```
+Create a `.env` file:
 
-Populate `server/.env` with your Supabase credentials:
 ```env
-# Supabase Configuration (from Supabase Dashboard -> Settings -> API)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOi...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
-
-# Direct Postgres Connection URL (Settings -> Database -> Connection string -> URI)
-DATABASE_URL=postgresql://postgres:[PASSWORD]@db.your-project.supabase.co:5432/postgres
-
-# Server Settings
-PORT=4000
+PORT=5000
 NODE_ENV=development
 
-# Allowed CORS Origins (comma-separated)
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173,https://infra-sync-navy.vercel.app,https://*.vercel.app
+SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+
+FRONTEND_URL=http://localhost:5173
 ```
 
-> **Security Note:** `SUPABASE_SERVICE_ROLE_KEY` bypasses PostgreSQL Row-Level Security (RLS) and must **never** be shared, committed to git, or exposed to the client bundle. The client communicates strictly with the Express API.
+Replace the placeholder values with your actual configuration.
 
-### 3. Initialize Database Tables
-Run the migration script in your Supabase SQL Editor:
-```sql
--- 1. Reports Table
-CREATE TABLE IF NOT EXISTS public.reports (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    client_report_id UUID UNIQUE NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('Pothole', 'Water Leak', 'Power Outage', 'Streetlight', 'Traffic Signal', 'Waste / Debris', 'Safety Concern', 'Road Damage', 'Equipment Damage', 'Flooding', 'Signage', 'Other')),
-    description TEXT NOT NULL,
-    location TEXT NOT NULL,
-    priority TEXT NOT NULL CHECK (priority IN ('Low', 'Medium', 'High', 'Critical')),
-    status TEXT NOT NULL DEFAULT 'Submitted' CHECK (status IN ('Draft', 'Submitted', 'Assigned', 'In Progress', 'Resolved', 'Rejected')),
-    reported_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    assigned_to TEXT,
-    resolved_at TIMESTAMPTZ,
-    rejection_reason TEXT,
-    version INTEGER NOT NULL DEFAULT 1
-);
+Start the backend:
 
--- 2. Activity Log Table
-CREATE TABLE IF NOT EXISTS public.report_activity (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    report_id UUID NOT NULL REFERENCES public.reports(id) ON DELETE CASCADE,
-    action_type TEXT NOT NULL,
-    previous_value JSONB,
-    new_value JSONB,
-    description TEXT NOT NULL,
-    performed_by TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
--- 3. Sync Operations Log
-CREATE TABLE IF NOT EXISTS public.sync_operations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    client_report_id UUID NOT NULL,
-    operation TEXT NOT NULL,
-    status TEXT NOT NULL,
-    error_message TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_reports_client_id ON public.reports(client_report_id);
-CREATE INDEX IF NOT EXISTS idx_reports_status ON public.reports(status);
-CREATE INDEX IF NOT EXISTS idx_activity_report_id ON public.report_activity(report_id);
-```
-
-### 4. Configure Client Environment
-Create `client/.env` (optional for local development, as it defaults to `http://localhost:4000/api`):
 ```bash
-cp client/.env.example client/.env
+npm run dev
 ```
+
+The backend should be available at:
+
+```text
+http://localhost:5000
+```
+
+### Step 4: Configure the Frontend
+
+Open another terminal:
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file:
 
 ```env
-# When omitted in development, defaults to http://localhost:4000/api
-# When omitted in production, defaults to https://offline-issue-report.vercel.app/api
-VITE_API_BASE_URL=http://localhost:4000/api
+VITE_API_URL=http://localhost:5000/api
 ```
 
-### 5. Running the Application Locally
-Open two terminal windows:
+Start the frontend:
 
-**Terminal 1 — Backend Server:**
 ```bash
-npm run dev:server
-# Server will run on http://localhost:4000
-# Health check: http://localhost:4000/api/health
+npm run dev
 ```
 
-**Terminal 2 — Frontend Client:**
+Open the application:
+
+```text
+http://localhost:5173
+```
+
+**Note:** The commands above assume your `package.json` files contain the corresponding scripts. Adjust them if your implementation uses different script names.
+
+## 7. Environment Variables
+
+### Backend
+
+| Variable | Description |
+|---|---|
+| `PORT` | Backend server port. |
+| `NODE_ENV` | Application environment. |
+| `SUPABASE_URL` | Supabase project URL. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Private backend database key. |
+| `FRONTEND_URL` | Frontend origin for CORS configuration. |
+
+### Frontend
+
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Backend API base URL. |
+
+Do not commit `.env` files or credentials to version control.
+
+## 8. Running Automated Tests
+
+Automated tests should verify the reliability of report creation, validation, synchronization, and report management.
+
+### Install Test Dependencies
+
+Install the testing libraries appropriate to your project.
+
+For a Vite frontend using Vitest:
+
 ```bash
-npm run dev:client
-# Vite client will run on http://localhost:3000
+cd frontend
+npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
 ```
 
-Alternatively, from the repository root:
+For a Node.js backend, use your chosen testing framework, such as Vitest or Jest, with Supertest for API testing.
+
+### Run Frontend Tests
+
 ```bash
-npm run build     # Builds both client and server
-npm run lint      # Runs TypeScript typechecks on both workspaces
+cd frontend
+npm run test
 ```
 
----
+Run tests in watch mode if supported:
 
-## Automated Test Execution
-
-The backend contains a test suite covering unit validation, optimistic version concurrency, state machine transitions, and idempotent sync operations using **Jest** and **Supertest** with mocked database fixtures.
-
-### Running the Tests
 ```bash
-# Run server test suite from root
-npm run test:server
-
-# Or directly inside the server directory
-cd server
-npm test
+npm run test -- --watch
 ```
 
-### Test Suite Structure & Output
-```
-PASS tests/unit/status-machine.test.ts
-  ✓ validates legal status transitions
-  ✓ rejects illegal status transitions
-  ✓ enforces coordinator-only roles for triage
-  ✓ requires rejection reason on Rejected state
-  ✓ validates explicit reopen flag on Resolved -> In Progress
+### Run Backend Tests
 
-PASS tests/integration/reports.test.ts
-  ✓ POST /api/reports - creates report and enforces client_report_id uniqueness
-  ✓ GET /api/reports - lists reports with pagination and status filters
-  ✓ PATCH /api/reports/:id - updates fields and enforces version check
-  ✓ DELETE /api/reports/:id - allows deletion of Drafts only
-
-PASS tests/integration/status.test.ts
-  ✓ PATCH /api/reports/:id/status - transitions status through workflow
-  ✓ PATCH /api/reports/:id/status - returns 409 on version mismatch
-  ✓ PATCH /api/reports/:id/status - returns 422 on illegal transition
-  ✓ PATCH /api/reports/:id/assign - assigns technician with coordinator role
-  ✓ GET /api/reports/:id/activity - returns chronological activity logs
-
-PASS tests/integration/sync.test.ts
-  ✓ POST /api/sync/reports - handles batch sync of new reports
-  ✓ POST /api/sync/reports - idempotently handles duplicate client_report_ids
-  ✓ POST /api/sync/reports - reports partial batch failures accurately
-
-Test Suites: 4 passed, 4 total
-Tests:       64 passed, 64 total
-Snapshots:   0 total
-```
-
-To run test coverage:
 ```bash
-cd server
-npm run test:coverage
+cd backend
+npm run test
 ```
 
----
+### Recommended Test Coverage
 
-## Seed & Demonstration Data
+| Test Area | Expected Result |
+|---|---|
+| Report form validation | Invalid reports are rejected. |
+| Report creation | Valid reports are saved successfully. |
+| Offline storage | Reports remain available after refreshing the page. |
+| Synchronization | Pending reports synchronize when connectivity returns. |
+| Duplicate prevention | Retried submissions do not create duplicate reports. |
+| Failed synchronization | Failed reports remain available for retry. |
+| Report assignment | Coordinators can assign submitted reports. |
+| Status updates | Only permitted workflow transitions succeed. |
+| Activity history | Report changes are recorded. |
+| API validation | Invalid requests return appropriate errors. |
 
-To test synchronization and coordinator triage workflows without manual data entry, use the following sample payloads:
+*Only report tests as passing when they have actually been implemented and executed.*
 
-### Sample 1: Critical Equipment Damage (Submitted)
-```json
-{
-  "client_report_id": "a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d",
-  "category": "Equipment Damage",
-  "priority": "Critical",
-  "status": "Submitted",
-  "location": "North Substation, Transformer Bay #4",
-  "description": "Oil seepage detected near primary cooling valve. Visual pressure gauge indicates operating anomaly.",
-  "reported_at": "2026-11-12T08:30:00.000Z"
-}
+## 9. Seed and Demonstration Data
+
+The following SQL inserts five demonstration reports into the Supabase database.
+
+```sql
+INSERT INTO public.reports (
+    client_report_id,
+    category,
+    description,
+    location,
+    priority,
+    status,
+    reported_at
+)
+VALUES
+(
+    gen_random_uuid(),
+    'Water Point',
+    'Community water pump has stopped supplying water. Mechanical or electrical inspection is required.',
+    'Deder Community Water Supply Station',
+    'High',
+    'Submitted',
+    NOW() - INTERVAL '5 days'
+),
+(
+    gen_random_uuid(),
+    'Equipment Damage',
+    'Electrical control panel has visible damage and requires technical inspection.',
+    'District Infrastructure Office',
+    'Critical',
+    'Submitted',
+    NOW() - INTERVAL '4 days'
+),
+(
+    gen_random_uuid(),
+    'Service Interruption',
+    'Blocked drainage has caused water accumulation and disrupted access along the community road.',
+    'Deder Main Market Road',
+    'High',
+    'Submitted',
+    NOW() - INTERVAL '3 days'
+),
+(
+    gen_random_uuid(),
+    'Safety Concern',
+    'Exposed electrical wiring has been identified near the entrance of a public community facility.',
+    'Public Community Hall',
+    'Critical',
+    'Submitted',
+    NOW() - INTERVAL '2 days'
+),
+(
+    gen_random_uuid(),
+    'Maintenance Requirement',
+    'Roof leakage has been observed in an administrative building and requires maintenance.',
+    'District Administrative Building',
+    'Medium',
+    'Submitted',
+    NOW() - INTERVAL '1 day'
+);
 ```
 
-### Sample 2: Moderate Road Hazard (Draft)
-```json
-{
-  "client_report_id": "b2c3d4e5-f6a1-4b2c-9d3e-4f5a6b7c8d9e",
-  "category": "Pothole",
-  "priority": "Medium",
-  "status": "Draft",
-  "location": "Avenue 42 & 5th Boulevard Westbound",
-  "description": "Asphalt depression approximately 40cm wide and 8cm deep in center lane.",
-  "reported_at": "2026-11-12T09:15:00.000Z"
-}
+### Verify Demonstration Data
+
+```sql
+SELECT
+    id,
+    category,
+    description,
+    location,
+    priority,
+    status,
+    reported_at
+FROM public.reports
+ORDER BY reported_at DESC;
 ```
 
-### Sample 3: High Priority Safety Hazard (Assigned)
-```json
-{
-  "client_report_id": "c3d4e5f6-a1b2-4c3d-ae4f-5a6b7c8d9e0f",
-  "category": "Traffic Signal",
-  "priority": "High",
-  "status": "Assigned",
-  "assigned_to": "Electrical Response Crew Alpha",
-  "location": "Central Crossing Ring Road",
-  "description": "Signal sequence stuck on flashing amber following early morning power surge.",
-  "reported_at": "2026-11-12T07:45:00.000Z"
-}
-```
+These records are fictional demonstration data and should not be treated as verified infrastructure incidents.
+
+## 10. Offline Synchronization Strategy
+
+The application uses an offline-first strategy to support field workers operating in areas with unreliable internet connectivity.
+
+### Report Creation
+
+1. A field worker completes the reporting form.
+2. The frontend validates the entered information.
+3. A unique `client_report_id` is generated.
+4. The report is saved to IndexedDB.
+5. Its synchronization state is set to `Pending`.
+
+### Automatic Synchronization
+
+When network connectivity becomes available:
+
+1. The frontend identifies pending reports.
+2. It sends them to the backend API.
+3. The backend validates the report.
+4. The backend checks the idempotency key or client report identifier.
+5. The report is inserted or safely reconciled with an existing record.
+6. The backend records the synchronization operation.
+7. The frontend marks the local report as `Synchronized` only after receiving successful server confirmation.
+
+### Duplicate Prevention
+
+Each locally created report receives a unique `client_report_id`.
+
+The database enforces uniqueness on this identifier.
+
+The backend uses this identifier and an idempotency strategy to prevent duplicate records when a request is retried after an interrupted connection.
+
+### Failed Synchronization
+
+If synchronization fails:
+
+- The local report remains stored.
+- Its synchronization state remains `Failed` or returns to `Pending`, depending on the implementation.
+- The error can be displayed to the user.
+- The report can be retried when connectivity is available.
+
+### Conflict Handling
+
+If a local report conflicts with a server-side update, the application should detect the conflict rather than silently overwrite server data.
+
+A conflict-resolution strategy should determine which changes are retained.
+
+### Data Preservation Principle
+
+Local data must not be deleted simply because a synchronization request was sent.
+
+It should only be marked as synchronized after the backend confirms successful persistence.
+
+## 11. Assumptions and Design Decisions
+
+The following assumptions guide the current design:
+
+1. Field workers may experience intermittent or unavailable internet connectivity.
+2. Reports must remain available locally until successful synchronization.
+3. A report can be created before the backend is reachable.
+4. Coordinators are responsible for reviewing, assigning, and managing reports.
+5. The application uses a predefined set of infrastructure categories and priority levels.
+6. Report workflow status and synchronization status are managed separately.
+7. PostgreSQL provides centralized persistent storage.
+8. IndexedDB provides browser-based offline persistence.
+9. The backend is responsible for validating requests and enforcing workflow permissions.
+10. Demonstration data is fictional and intended for development and testing.
+
+### Important Design Decisions
+
+**Why IndexedDB?**
+
+IndexedDB supports structured browser storage and is more appropriate than localStorage for managing multiple offline reports and their synchronization metadata.
+
+**Why Supabase PostgreSQL?**
+
+It provides a relational database, constraints, indexing, and centralized storage for reports and activity history.
+
+**Why a Unique Client Report ID?**
+
+A client-generated identifier allows the backend to recognize a report across retries and reduce duplicate submissions.
+
+**Why Keep Activity History?**
+
+Infrastructure reports may involve multiple people and status changes. An activity history improves traceability and accountability.
+
+**Why Separate Synchronization and Workflow Status?**
+
+A report can be submitted locally while still waiting for server synchronization. Combining these statuses would make the system harder to manage accurately.
+
+## 12. Known Limitations
+
+The following limitations should be reviewed against the final implementation:
+
+- Browser-based offline storage depends on available device storage and browser behavior.
+- Clearing browser data may remove locally stored reports that have not synchronized.
+- The application may require an initial online visit to load its frontend assets unless service-worker caching is configured.
+- GPS availability depends on device hardware, browser permissions, and location services.
+- Conflict resolution may require additional development for simultaneous updates from multiple users.
+- Authentication and production-grade role management may be limited if simulated roles are used.
+- Synchronization reliability depends on backend availability and network conditions.
+- Real-time notifications may not be implemented.
+- The system may not yet support image attachments, document uploads, or advanced reporting analytics.
+
+## 13. Manual Quality Assurance Checklist
+
+Use this checklist to verify the application before submission or demonstration.
+
+### Application Setup
+
+- [ ] Frontend starts successfully.
+- [ ] Backend starts successfully.
+- [ ] Supabase database connection works.
+- [ ] Dashboard loads without errors.
+- [ ] Environment variables are configured correctly.
+
+### Report Creation
+
+- [ ] A user can create a report.
+- [ ] Required fields are validated.
+- [ ] All infrastructure categories are available.
+- [ ] All priority levels are available.
+- [ ] Observation date and time are saved correctly.
+- [ ] Valid reports can be submitted.
+
+### Offline Functionality
+
+- [ ] Open the application while connected to the internet.
+- [ ] Disconnect the network.
+- [ ] Create a new infrastructure report.
+- [ ] Confirm that the report is saved locally.
+- [ ] Refresh the page while still offline.
+- [ ] Confirm that the report is still available.
+- [ ] Confirm that its synchronization state is Pending.
+
+### Synchronization
+
+- [ ] Restore internet connectivity.
+- [ ] Confirm that pending reports are detected.
+- [ ] Confirm that reports are sent to the backend.
+- [ ] Confirm that successful reports are marked Synchronized.
+- [ ] Confirm that failed reports remain available for retry.
+- [ ] Retry a previously failed request.
+- [ ] Confirm that retries do not create duplicate server records.
+- [ ] Confirm that conflicts are handled without silently losing data.
+
+### Coordinator Operations
+
+- [ ] View submitted reports.
+- [ ] Assign a report to a maintenance coordinator.
+- [ ] Change a report's status.
+- [ ] Reject a report with a reason.
+- [ ] Resolve a report.
+- [ ] View report activity history.
+
+### Data Integrity and Security
+
+- [ ] Verify that reports are correctly stored in PostgreSQL.
+- [ ] Verify that required fields cannot be empty.
+- [ ] Verify that invalid status transitions are rejected.
+- [ ] Verify that the frontend does not expose the Supabase service-role key.
+- [ ] Verify that users cannot perform unauthorized coordinator operations.
+
+## 14. Approximate Development Time
+
+Record the actual time spent by the development team. The following is an illustrative estimate, not a verified project time log.
+
+| Development Activity | Estimated Time |
+|---|---:|
+| Requirements analysis and planning | 2 hours |
+| Database design and implementation | 1.5 hours |
+| Frontend development | 1.5 hours |
+| Backend API development | 2 hours |
+| Offline storage and synchronization | 2 hours |
+| Integration and debugging | 1 hours |
+| Testing and documentation | 1 hours |
+| **Estimated Total** | **46–70 hours** |
+
+Actual time may vary depending on team size, implementation complexity, and debugging requirements.
+
+## 15. Future Improvements
+
+With additional development time, the following improvements could be implemented:
+
+1. **Authentication and Authorization:** Integrate Supabase Auth with dedicated field-worker, coordinator, and administrator roles.
+2. **Advanced Conflict Resolution:** Add version-based conflict detection and a user-assisted resolution interface.
+3. **GPS Integration:** Capture and display accurate report coordinates on an interactive map.
+4. **Image Attachments:** Allow field workers to attach photos of damaged infrastructure.
+5. **Push Notifications:** Notify coordinators when new reports arrive and workers when assignments change.
+6. **Advanced Analytics:** Add dashboards for infrastructure categories, geographical distribution, maintenance performance, and response times.
+7. **Progressive Web App Improvements:** Add reliable service-worker caching and installability.
+8. **Automated Integration Tests:** Expand API, database, and end-to-end test coverage.
+9. **Deployment:** Deploy the frontend and backend with production-ready configuration, monitoring, and backups.
+10. **Accessibility and Localization:** Improve accessibility and support English, Amharic, and Afaan Oromo.
+
+## 16. AI and Development-Tool Disclosure
+
+AI-assisted tools were used as development support during project planning and documentation.
+
+### AI Assistance
+
+ChatGPT was used to assist with:
+
+- Requirements clarification and project planning.
+- Database schema design and SQL query examples.
+- Architecture and synchronization-strategy discussions.
+- Documentation structure and README preparation.
+- Technical explanations and debugging guidance.
+
+
+### Development Tools
+
+| Tool | Purpose |
+|---|---|
+| Visual Studio Code and AntiGravity | Source-code editing and development. |
+| Git and GitHub | Version control and repository management. |
+| Supabase | PostgreSQL database and backend infrastructure. |
+| Postman or equivalent | API testing, if used. |
+| Browser Developer Tools | Debugging and network inspection. |
+
+AI-generated suggestions and code were intended as development assistance. The development team remains responsible for reviewing, adapting, testing, and validating all implementation details.
+
+## 17. Conclusion
+
+The Offline Infrastructure Reporting and Maintenance Management System aims to improve infrastructure issue reporting and maintenance coordination, especially in environments with unreliable internet connectivity.
+
+By combining local browser storage, automatic synchronization, centralized PostgreSQL storage, and report workflow management, the system provides a foundation for reliable field reporting and coordinated maintenance operations.
+
+The project can be extended into a more comprehensive infrastructure management platform through authentication, GPS-based reporting, image attachments, analytics, notifications, and improved synchronization conflict resolution.
 
 ---
 
-## Design Decisions & Assumptions
+**Project Status:** Update this section to reflect the actual implementation status.
 
-| Area | Decision Made | Rationale |
-|---|---|---|
-| **Client Primary Key vs Server ID** | Dual identification (`id` client string + `clientReportId` UUID + optional `serverId` UUID). | Field workers create reports with zero server contact. `clientReportId` is generated immediately at creation and remains permanent across all retries to guarantee backend idempotency. |
-| **Optimistic Concurrency Control** | Integer `version` column checked on every `PATCH` or status transition. | Prevents coordinators from overwriting each other's status notes or field edits if editing the same ticket concurrently. |
-| **Strict Transition Matrix** | `Draft → Submitted → Assigned → In Progress → Resolved`, with `Rejected` as terminal and explicit `reopen` for `Resolved → In Progress`. | Prevents reports from skipping steps (e.g., submitting directly to resolved) and creates a dependable audit trail for municipal work orders. |
-| **Batch Synchronization Endpoint** | Dedicated `POST /api/sync/reports` handling up to 50 reports per request. | Mobile devices reconnecting after hours in the field may have dozens of queued reports; issuing individual HTTP requests creates connection exhaustion and high latency. |
-| **Offline Storage Engine** | Dexie.js wrapping IndexedDB with schema migrations. | IndexedDB provides multi-megabyte structured storage unaffected by browser tab closures, unlike `localStorage`. |
-| **Role Simulation** | Header-based development auth (`X-Dev-Role: coordinator` / `field_worker`) toggled via top navigation UI. | Allows complete evaluation of role-based workflows and permission restrictions without requiring third-party OAuth infrastructure during local testing. |
+**Repository:** (https://github.com/yasinhusenwako/offline-issue-report)
 
----
-
-## Known Limitations & Edge Cases
-
-1. **Binary Attachment Storage**: Image attachments are currently stored as Base64 strings or local preview URIs. In high-volume production, this should be transitioned to direct Supabase Storage S3 presigned URLs.
-2. **True Peer-to-Peer Mesh**: The current architecture is "client-to-server offline-first". If two field workers meet in the field without internet, reports cannot sync peer-to-peer over Bluetooth or Wi-Fi Direct without an intermediary gateway.
-3. **PWA Storage Quota Warnings**: While modern mobile browsers typically allocate several gigabytes for IndexedDB, aggressive device memory cleanup on low-end iOS devices can theoretically purge IndexedDB if storage pressure is reached. The app requests persistent storage (`navigator.storage.persist()`) where supported.
-4. **WebSocket Real-time Updates**: Real-time push updates from Supabase are not active by default to minimize battery consumption on mobile clients; client reconciliation currently relies on interval polling and manual/event triggers.
-
----
-
-## Manual QA Verification Checklist
-
-Use this checklist to verify full offline and online functionality:
-
-- [ ] **1. Online Report Creation**:
-  - Open app with active connection.
-  - Fill out and submit a new report.
-  - Confirm report appears immediately with green **Synchronized** badge.
-  - Verify record appears in Supabase `reports` table.
-- [ ] **2. Offline Report Creation**:
-  - In DevTools, set Network to **Offline** (or toggle "Simulate Offline" in app Settings).
-  - Submit a new report.
-  - Confirm confirmation modal appears and report shows amber **Pending Sync** badge.
-  - Verify report is visible on Dashboard and All Reports.
-- [ ] **3. Offline Persistence**:
-  - Keep browser offline and refresh the page (`F5`).
-  - Confirm previously created offline report remains intact in the table and details view.
-- [ ] **4. Automatic Reconnection Sync**:
-  - Switch Network back to **Online**.
-  - Within seconds (or on next interval), observe sync indicator animating.
-  - Confirm report badge transitions from **Pending** to **Synchronized**.
-- [ ] **5. Idempotent Retry Safety**:
-  - Navigate to **Pending Sync** page and click **Sync Now**.
-  - Confirm backend returns duplicate acknowledgment without creating duplicate rows in Supabase.
-- [ ] **6. Coordinator Status Triage**:
-  - Switch active user role to **Coordinator** in the top bar.
-  - Navigate to **Report Management**.
-  - Assign an unassigned report to a technician and transition status to **In Progress**.
-  - Verify transition is saved and logged in **Activity History**.
-- [ ] **7. Version Conflict Handling**:
-  - Simulate a conflict by altering the report version in server database or updating from another browser.
-  - Submit an edit from client with outdated version.
-  - Verify app displays **Conflict Detected** modal without losing local changes.
-
----
-
-## Project Retrospective: Time Spent & Future Improvements
-
-### Approximate Time Spent
-- **Total Development & Integration Time**: ~8.5 hours
-  - *Phase 1: Codebase inspection & schema gap analysis*: ~1.0 hour
-  - *Phase 2: Centralized API client & TypeScript typing alignment*: ~1.5 hours
-  - *Phase 3: Dexie.js schema upgrade & offline queue engine*: ~2.0 hours
-  - *Phase 4: Conflict resolution & state machine alignment*: ~1.5 hours
-  - *Phase 5: Automated test suite & Vercel deployment debugging*: ~2.5 hours
-
-### What Would Be Improved With More Time
-1. **Background Sync API (`ServiceWorkerRegistration.sync`)**: Implement the W3C Background Sync API so reports queue for background transmission even if the user completely closes the browser tab before reconnecting.
-2. **Delta / Partial Field Synchronization**: Currently, record updates send the full snapshot; implementing JSON patch or delta updates would reduce cellular bandwidth consumption in low-bandwidth field scenarios.
-3. **GeoJSON & Offline Tile Caching**: Add offline map tile caching via CacheStorage API so field workers can visualize location pins on satellite/road maps without internet access.
-4. **End-to-End Playwright Tests**: Complement the existing 64 Jest/Supertest backend tests with full Playwright E2E tests simulating browser network toggles and IndexedDB transactions.
-
----
-
-## AI & Development Tool Disclosure
-
-In accordance with transparent engineering practices:
-- **AI Coding Assistance**: Google Antigravity Agentic Assistant was utilized during this project for codebase cross-analysis, generating initial Jest integration test suites, diagnosing CORS wildcard and Vercel build-cache edge cases, and drafting technical architecture documentation.
-- **Human Verification**: All code, architectural design decisions, state machine boundaries, IndexedDB schema versions, and security constraints were reviewed, executed, verified locally, and deployed to production.
-- **Primary Tooling**: Node.js, Vite, TypeScript Compiler (`tsc`), Tailwind CSS, Jest, Supertest, Git, cURL, and Vercel CLI.
+**Developed By:** Yasin Husen
