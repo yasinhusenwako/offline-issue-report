@@ -16,12 +16,23 @@ app.set('trust proxy', 1);
 // ─── Security ─────────────────────────────────────────────────────────────────
 app.use(helmet());
 
+function isOriginAllowed(origin: string, allowedOrigins: string[]): boolean {
+  return allowedOrigins.some((pattern) => {
+    if (pattern === '*' || pattern === origin) return true;
+    if (pattern.includes('*')) {
+      const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+      return new RegExp(`^${escaped}$`).test(origin);
+    }
+    return false;
+  });
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      if (config.cors.origins.includes(origin)) {
+      if (isOriginAllowed(origin, config.cors.origins)) {
         return callback(null, true);
       }
       callback(new Error(`CORS: origin '${origin}' not allowed`));

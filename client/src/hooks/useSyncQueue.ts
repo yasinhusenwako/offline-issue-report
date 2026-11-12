@@ -28,7 +28,9 @@ export function useSyncQueue() {
   }, []);
 
   const triggerSync = async () => {
-    return await syncService.processQueue();
+    const res = await syncService.processQueue(true);
+    await syncService.pullFromServer();
+    return res;
   };
 
   const retryItem = async (queueItemId: string) => {

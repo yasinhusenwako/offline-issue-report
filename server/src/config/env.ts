@@ -30,7 +30,10 @@ export const config = {
   },
 
   cors: {
-    origins: optionalEnv('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173')
+    origins: optionalEnv(
+      'CORS_ORIGINS',
+      'http://localhost:3000,http://localhost:5173,https://infra-sync.vercel.app,https://*.vercel.app'
+    )
       .split(',')
       .map((o) => o.trim())
       .filter(Boolean),
