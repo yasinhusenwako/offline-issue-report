@@ -1,10 +1,14 @@
 import { ReportItem, SyncQueueItem, UserRole } from '../types';
 
+const DEFAULT_API_BASE_URL = import.meta.env?.PROD
+  ? 'https://offline-issue-report.vercel.app/api'
+  : 'http://localhost:4000/api';
+
 const API_BASE_URL =
   (
     (import.meta.env?.VITE_API_BASE_URL as string | undefined) ||
     (import.meta.env?.VITE_API_URL as string | undefined) ||
-    'http://localhost:4000/api'
+    DEFAULT_API_BASE_URL
   ).replace(/\/+$/, '');
 
 const REQUEST_TIMEOUT_MS = 15_000;
