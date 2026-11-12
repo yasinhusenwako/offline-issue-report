@@ -415,12 +415,19 @@ class SyncService {
 
   private async handleItemFailure(item: SyncQueueItem, err: unknown): Promise<void> {
     const errorMsg = err instanceof Error ? err.message : 'Unknown synchronization error';
-    const nextAttempts = item.attempts + 1;
+    const isNonRetryableClientError =
+      err instanceof ApiClientError && [400, 403, 404, 422].includes(err.statusCode);
+    const nextAttempts = isNonRetryableClientError ? item.maxAttempts : item.attempts + 1;
     const exhausted = nextAttempts >= item.maxAttempts;
 
     await db.syncQueue.update(item.id, {
       status: 'Failed',
-      errorMessage: exhausted ? `Max retries reached: ${errorMsg}` : errorMsg,
+      attempts: nextAttempts,
+      errorMessage: isNonRetryableClientError
+        ? errorMsg
+        : exhausted
+          ? `Max retries reached: ${errorMsg}`
+          : errorMsg,
       nextRetryAt: exhausted ? undefined : computeNextRetryIso(nextAttempts),
     });
 

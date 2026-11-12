@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { ReportItem, ReportStatus } from '../../types';
 import { db } from '../../db';
@@ -27,6 +27,13 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTargetStatus('');
+    setRejectionReason('');
+    setResolutionNotes('');
+    setError(null);
+  }, [isOpen, report?.id]);
 
   if (!report) return null;
 

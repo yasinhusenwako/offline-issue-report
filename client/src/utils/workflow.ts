@@ -6,7 +6,7 @@ export const VALID_STATUS_TRANSITIONS: Record<ReportStatus, ReportStatus[]> = {
   Assigned: ['In Progress', 'Rejected'],
   'In Progress': ['Resolved', 'Rejected'],
   Resolved: ['In Progress'], // Reopened if maintenance audit fails
-  Rejected: ['Submitted'], // Reconsidered with additional notes
+  Rejected: [], // Terminal state on backend
 };
 
 /**
