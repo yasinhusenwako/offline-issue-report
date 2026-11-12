@@ -1,0 +1,6 @@
+{
+  "name": "InfraSync - Offline Infrastructure Reporting & Maintenance",
+  "description": "Offline-first field reporting and infrastructure maintenance management system with local Dexie.js persistence, seamless queue synchronization, and coordinator workflows.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
