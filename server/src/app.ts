@@ -61,6 +61,16 @@ if (config.isDevelopment) {
 // ⚠️  DEVELOPMENT ONLY — replace with real auth in production
 app.use(devAuthMiddleware);
 
+// ─── Root Info ────────────────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    service: 'InfraSync API',
+    version: '1.0.0',
+    health: '/api/health',
+  });
+});
+
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api', apiRoutes);
 
