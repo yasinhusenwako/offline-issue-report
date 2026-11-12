@@ -10,6 +10,9 @@ import apiRoutes from './routes/index';
 
 const app = express();
 
+// Trust first proxy (required for accurate rate-limiting behind reverse proxies)
+app.set('trust proxy', 1);
+
 // ─── Security ─────────────────────────────────────────────────────────────────
 app.use(helmet());
 

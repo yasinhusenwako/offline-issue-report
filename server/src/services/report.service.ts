@@ -106,9 +106,12 @@ export async function getReports(
   if (dateFrom) query = query.gte('created_at', dateFrom);
   if (dateTo) query = query.lte('created_at', dateTo);
   if (search) {
-    query = query.or(
-      `category.ilike.%${search}%,description.ilike.%${search}%,location.ilike.%${search}%`
-    );
+    const safeSearch = search.replace(/[,()]/g, ' ').trim();
+    if (safeSearch) {
+      query = query.or(
+        `category.ilike.%${safeSearch}%,description.ilike.%${safeSearch}%,location.ilike.%${safeSearch}%`
+      );
+    }
   }
 
   const from = (page - 1) * limit;
