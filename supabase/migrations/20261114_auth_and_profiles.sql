@@ -49,6 +49,24 @@ CREATE TRIGGER on_auth_user_created
 -- 4. Enable Row Level Security (RLS) on Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- Helper security definer function to avoid RLS recursion when checking administrative roles
+CREATE OR REPLACE FUNCTION public.is_admin_or_coordinator()
+RETURNS boolean AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role IN ('admin', 'coordinator')
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Drop any existing policies first to allow safe, idempotent re-runs
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins and coordinators can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can update any profile" ON public.profiles;
+DROP POLICY IF EXISTS "coordinator can update any profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins and coordinators can update any profile" ON public.profiles;
+
 -- Allow users to read their own profile
 CREATE POLICY "Users can view own profile"
   ON public.profiles
@@ -59,12 +77,7 @@ CREATE POLICY "Users can view own profile"
 CREATE POLICY "Admins and coordinators can view all profiles"
   ON public.profiles
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'coordinator')
-    )
-  );
+  USING (public.is_admin_or_coordinator());
 
 -- Allow users to update their own non-role fields (cannot promote themselves)
 CREATE POLICY "Users can update own profile"
@@ -76,16 +89,11 @@ CREATE POLICY "Users can update own profile"
     role = (SELECT role FROM public.profiles WHERE id = auth.uid())
   );
 
--- Allow admins to update any profile (including role changes)
-CREATE POLICY "Admins can update any profile"
+-- Allow admins and coordinators to update any profile (including role changes)
+CREATE POLICY "Admins and coordinators can update any profile"
   ON public.profiles
   FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  USING (public.is_admin_or_coordinator());
 
 -- ==============================================================================
 -- Initial Administrative User Promotion Helper:
