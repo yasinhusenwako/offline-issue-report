@@ -48,7 +48,7 @@ export const MobileNav: React.FC<{
         className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 z-30 flex items-center justify-around px-2 shadow-lg"
       >
         <NavLink
-          to="/"
+          to="/dashboard"
           end
           className={({ isActive }) =>
             `min-h-[44px] min-w-[44px] flex flex-col items-center justify-center flex-1 py-1 text-[11px] font-bold transition-colors ${

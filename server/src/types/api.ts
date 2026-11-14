@@ -14,6 +14,7 @@ export interface DevUser {
   id: string;
   role: UserRole;
   name: string;
+  email?: string;
 }
 
 // ─── API Response Types ───────────────────────────────────────────────────────

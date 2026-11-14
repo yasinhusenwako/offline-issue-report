@@ -1,4 +1,13 @@
-export type UserRole = 'field_worker' | 'coordinator';
+export type UserRole = 'field_worker' | 'coordinator' | 'admin';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string;
+  role: UserRole;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export type ReportCategory =
   | 'Water Point'

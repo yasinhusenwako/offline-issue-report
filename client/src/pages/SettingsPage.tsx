@@ -18,7 +18,7 @@ import { db, initializeDatabase } from '../db';
 import { useReports, useSyncQueueItems, useActivities } from '../hooks/useReports';
 
 export const SettingsPage: React.FC = () => {
-  const { role, switchRole, userName, userId } = useAuth();
+  const { role, userName, userId } = useAuth();
   const { isOnline, isSimulatingOffline, setSimulateOffline } = useNetwork();
   const { reports } = useReports();
   const { queueItems } = useSyncQueueItems();
@@ -122,14 +122,11 @@ export const SettingsPage: React.FC = () => {
             <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-1">Operating Mode</span>
             <div className="flex items-center justify-between mt-1">
               <span className="font-extrabold text-slate-900 uppercase text-xs">
-                {role === 'field_worker' ? 'Field Worker' : 'Coordinator'}
+                {role.replace('_', ' ')}
               </span>
-              <button
-                onClick={switchRole}
-                className="min-h-[44px] flex items-center text-xs text-blue-700 hover:text-blue-900 font-bold underline px-1"
-              >
-                Switch Role
-              </button>
+              <span className="text-xs text-slate-500 font-medium">
+                Managed via Supabase Auth
+              </span>
             </div>
           </div>
         </div>

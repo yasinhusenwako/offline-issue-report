@@ -1,21 +1,24 @@
-import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { Wifi, WifiOff, RefreshCw, Shield, HardHat, Layers } from 'lucide-react';
+import React, { useState } from 'react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { Wifi, WifiOff, RefreshCw, Shield, HardHat, Layers, LogOut, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNetwork } from '../../contexts/NetworkContext';
 import { useSyncQueue } from '../../hooks/useSyncQueue';
 import { PWAInstallButton } from '../ui/PWAInstallButton';
 
 export const TopBar: React.FC<{ onMobileMenuToggle: () => void }> = ({ onMobileMenuToggle }) => {
-  const { role, switchRole, userName } = useAuth();
+  const { role, userName, signOut } = useAuth();
   const { isOnline, isSimulatingOffline, toggleSimulateOffline } = useNetwork();
   const { pendingCount, isSyncing } = useSyncQueue();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // Determine breadcrumb title
   const getPageTitle = () => {
     switch (location.pathname) {
       case '/':
+      case '/dashboard':
         return 'System Overview';
       case '/reports':
         return 'Infrastructure Reports';
@@ -29,12 +32,19 @@ export const TopBar: React.FC<{ onMobileMenuToggle: () => void }> = ({ onMobileM
         return 'Coordinator Report Triage';
       case '/maintenance':
         return 'Maintenance Scheduling';
+      case '/admin/users':
+        return 'User & Role Administration';
       case '/settings':
         return 'System Settings';
       default:
         if (location.pathname.startsWith('/reports/')) return 'Report Details';
         return 'InfraSync';
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/', { replace: true });
   };
 
   return (
@@ -50,13 +60,15 @@ export const TopBar: React.FC<{ onMobileMenuToggle: () => void }> = ({ onMobileM
         </button>
 
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs">
-          <span className="hidden sm:inline text-slate-600 font-semibold">InfraSync</span>
+          <Link to="/" className="hidden sm:inline text-slate-600 hover:text-slate-900 font-semibold">
+            InfraSync
+          </Link>
           <span className="hidden sm:inline text-slate-300" aria-hidden="true">/</span>
           <span className="font-bold text-slate-900 tracking-tight">{getPageTitle()}</span>
         </nav>
       </div>
 
-      {/* Zone 3: Primary Status Controls, Connection, Role Switcher */}
+      {/* Zone 3: Primary Status Controls, Connection, User Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Offline Simulation / Real Connection Status */}
         <button
@@ -98,21 +110,65 @@ export const TopBar: React.FC<{ onMobileMenuToggle: () => void }> = ({ onMobileM
           <span className="hidden md:inline font-medium">in queue</span>
         </Link>
 
-        {/* User Role Switcher for Development / Field Testing */}
-        <button
-          onClick={switchRole}
-          className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
-          title={`Currently logged in as ${userName}. Click to switch role.`}
-          aria-label={`Switch role from ${role === 'field_worker' ? 'Field Worker' : 'Coordinator'}`}
-        >
-          {role === 'field_worker' ? (
-            <HardHat className="w-4 h-4 text-amber-600" />
-          ) : (
-            <Shield className="w-4 h-4 text-indigo-600" />
+        {/* User Account / Role dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="min-h-[44px] flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+            aria-label="User Account Menu"
+          >
+            {role === 'admin' ? (
+              <Shield className="w-4 h-4 text-purple-600" />
+            ) : role === 'coordinator' ? (
+              <Shield className="w-4 h-4 text-indigo-600" />
+            ) : (
+              <HardHat className="w-4 h-4 text-amber-600" />
+            )}
+            <span className="hidden md:inline truncate max-w-[130px]">{userName}</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                role === 'admin'
+                  ? 'bg-purple-100 text-purple-900'
+                  : role === 'coordinator'
+                  ? 'bg-indigo-100 text-indigo-900'
+                  : 'bg-amber-100 text-amber-950'
+              }`}
+            >
+              {role === 'field_worker' ? 'Field' : role}
+            </span>
+          </button>
+
+          {userMenuOpen && (
+            <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-50 text-xs">
+              <div className="px-4 py-2 border-b border-slate-100">
+                <div className="font-bold text-slate-900 truncate">{userName}</div>
+                <div className="text-[11px] text-slate-500 capitalize">{role.replace('_', ' ')}</div>
+              </div>
+
+              {role === 'admin' && (
+                <Link
+                  to="/admin/users"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 font-semibold"
+                >
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>User Management</span>
+                </Link>
+              )}
+
+              <button
+                onClick={() => {
+                  setUserMenuOpen(false);
+                  handleSignOut();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-red-50 text-red-700 font-semibold transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </button>
+            </div>
           )}
-          <span className="hidden lg:inline">{role === 'field_worker' ? 'Field Worker' : 'Coordinator'}</span>
-          <span className="text-[11px] text-blue-700 underline font-medium">Switch</span>
-        </button>
+        </div>
 
         {/* PWA Install Button */}
         <div className="hidden sm:block">

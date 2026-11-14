@@ -21,6 +21,12 @@ export class InfraSyncDatabase extends Dexie {
       activities: 'id, reportId, action, timestamp, userRole',
       settings: 'id',
     });
+    this.version(3).stores({
+      reports: 'id, clientReportId, serverId, authorId, category, priority, status, syncStatus, reportedAt, updatedAt, isDraft',
+      syncQueue: 'id, reportId, status, createdAt, attempts, nextRetryAt',
+      activities: 'id, reportId, action, timestamp, userRole',
+      settings: 'id',
+    });
   }
 }
 

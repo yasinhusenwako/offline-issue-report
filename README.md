@@ -26,18 +26,71 @@ Coordinators can review submitted reports, assign maintenance personnel, monitor
 
 | Component | Technology |
 |---|---|
-| Frontend | React.js |
+| Frontend | React.js 19, TypeScript, React Router v7 |
 | Build Tool | Vite |
-| Programming Language | TypeScript / JavaScript |
-| Styling | Tailwind CSS |
-| Backend | Node.js and Express.js |
-| Database | Supabase PostgreSQL |
-| Offline Storage | IndexedDB (Dexie.js, if implemented) |
-| API Communication | REST API |
-| Data Validation | Zod (if implemented) |
+| Styling | Tailwind CSS v4 |
+| Authentication | Supabase Auth (Email/Password, Session Persistence) |
+| Backend | Node.js and Express.js (TypeScript) |
+| Database | Supabase PostgreSQL with Row Level Security (RLS) |
+| Offline Storage | IndexedDB via Dexie.js (v4) |
+| API Communication | Centralized REST API client with Bearer JWT |
+| Data Validation | Zod |
+| Testing | Jest, Supertest |
+| PWA Support | vite-plugin-pwa (Service Worker precaching) |
 | Version Control | Git and GitHub |
 
-## 3. System Architecture
+## 4. Supabase Authentication & Role-Based Access Control (RBAC)
+
+The application implements full **Supabase Authentication** with three distinct application roles:
+
+| Role | Permissions & Access Scope |
+|---|---|
+| **Field Worker** (`field_worker`) | Default role upon public registration. Can access Dashboard, create and edit local reports offline, view synchronization queue, track report history, and submit reports to central database. Restricted from coordinator triage and admin panels. |
+| **Coordinator** (`coordinator`) | Can access Coordinator Command Center, review submitted reports, assign technician teams, perform status transitions (`Submitted → Assigned → In Progress → Resolved`), and reject reports with mandatory audit notes. |
+| **Administrator** (`admin`) | Universal system oversight. Has superuser rights across all routes and API endpoints, can access User & Role Administration (`/admin/users`), promote operatives to coordinators, and adjust system permissions. |
+
+### Database Profiles & Migration
+
+User roles are persisted in `public.profiles`, linked to Supabase's `auth.users` via primary key foreign key constraints:
+
+```sql
+-- Run in Supabase SQL Editor:
+-- File: supabase/migrations/20261114_auth_and_profiles.sql
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL DEFAULT '',
+  role TEXT NOT NULL DEFAULT 'field_worker' CHECK (role IN ('field_worker', 'coordinator', 'admin')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Trigger auto-populates profile upon signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, email, role)
+  VALUES (new.id, COALESCE(new.raw_user_meta_data->>'full_name', ''), COALESCE(new.email, ''), 'field_worker')
+  ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, email = EXCLUDED.email;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+### Promoting an Initial Administrator
+To promote your first registered user to Administrator:
+```sql
+UPDATE public.profiles
+SET role = 'admin'
+WHERE email = 'your-admin-email@example.com';
+```
+
+## 5. Offline Authentication Resilience
+- **Cached Local Session:** When offline, previously authenticated sessions remain active through cached local profile storage in IndexedDB / localStorage.
+- **Offline Report Preservation:** Field workers can create and save reports completely offline. Reports are tagged with `authorId` and remain safely stored in IndexedDB until internet access is restored.
+- **Account Isolation:** Reports are scoped to local device storage. Signing out does **not** erase unsynchronized offline reports, ensuring zero data loss during shifts.
+
+## 6. System Architecture
 
 The system follows a client-server architecture with an offline-first data management strategy.
 

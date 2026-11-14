@@ -11,7 +11,16 @@ export type ReportStatus =
 
 export type ReportPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
-export type UserRole = 'field_worker' | 'coordinator';
+export type UserRole = 'field_worker' | 'coordinator' | 'admin';
+
+export type Profile = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+};
 
 export type SyncOperationStatus = 'Pending' | 'Completed' | 'Failed';
 
@@ -116,6 +125,19 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Omit<SyncOperation, 'id' | 'created_at'>>;
+        Relationships: [];
+      };
+      profiles: {
+        Row: Profile;
+        Insert: {
+          id: string;
+          email?: string;
+          full_name?: string;
+          role?: UserRole;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<Profile, 'id' | 'created_at'>>;
         Relationships: [];
       };
     };

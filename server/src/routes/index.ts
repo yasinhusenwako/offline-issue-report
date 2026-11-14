@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import reportRoutes from './report.routes';
 import syncRoutes from './sync.routes';
+import authRoutes from './auth.routes';
 import { supabase } from '../config/supabase';
 
 const router = Router();
@@ -26,6 +27,7 @@ router.get('/health', async (_req: Request, res: Response) => {
 });
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
+router.use('/auth', authRoutes);
 router.use('/reports', reportRoutes);
 router.use('/sync', syncRoutes);
 

@@ -1,4 +1,5 @@
 import { ReportItem, SyncQueueItem, UserRole } from '../types';
+import { supabase } from '../lib/supabase';
 
 const DEFAULT_API_BASE_URL = import.meta.env?.PROD
   ? 'https://offline-issue-report.vercel.app/api'
@@ -165,12 +166,22 @@ class ApiService {
     }
   }
 
+  private async getAuthToken(): Promise<string | null> {
+    try {
+      const { data } = await supabase.auth.getSession();
+      return data.session?.access_token || null;
+    } catch {
+      return null;
+    }
+  }
+
   private async request<T>(
     path: string,
     options: RequestInit & { role?: UserRole; timeoutMs?: number } = {}
   ): Promise<T> {
     await this.checkSimulatedNetworkConditions();
 
+    const token = await this.getAuthToken();
     const { role, headers, timeoutMs = REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -182,6 +193,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'X-Dev-Role': this.getCurrentRole(role),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...(headers || {}),
         },
       });

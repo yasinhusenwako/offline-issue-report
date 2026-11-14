@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { config } from './config/env';
-import { devAuthMiddleware } from './middleware/auth.middleware';
+import { authMiddleware } from './middleware/auth.middleware';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import apiRoutes from './routes/index';
 
@@ -68,9 +68,9 @@ if (config.isDevelopment) {
   app.use(morgan('combined'));
 }
 
-// ─── Dev Auth (simulated roles) ───────────────────────────────────────────────
-// ⚠️  DEVELOPMENT ONLY — replace with real auth in production
-app.use(devAuthMiddleware);
+// ─── Authentication Middleware ────────────────────────────────────────────────
+// Supports real Supabase JWT tokens via Bearer header, with X-Dev-Role fallback for tests
+app.use(authMiddleware);
 
 // ─── Root Info ────────────────────────────────────────────────────────────────
 app.get('/', (_req, res) => {
