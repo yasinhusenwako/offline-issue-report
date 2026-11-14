@@ -234,26 +234,26 @@ export const CreateReportPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-slide-up">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 mb-1"
+            className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-1 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Return to Previous View</span>
           </button>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {draftId ? `Edit Draft Report ${draftId}` : 'Create Infrastructure Report'}
           </h1>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
             Offline-first architecture. All records persist locally to IndexedDB even without network connectivity.
           </p>
         </div>
 
         {!isOnline && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 font-bold self-start sm:self-auto">
-            <WifiOff className="w-4 h-4 text-amber-700" />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-lg text-xs text-amber-900 dark:text-amber-300 font-bold self-start sm:self-auto">
+            <WifiOff className="w-4 h-4 text-amber-700 dark:text-amber-400" />
             <span>Offline Guaranteed</span>
           </div>
         )}
@@ -263,19 +263,19 @@ export const CreateReportPage: React.FC = () => {
         <div
           role="status"
           aria-live="polite"
-          className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs rounded-xl flex items-center gap-2.5 font-medium shadow-xs"
+          className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 text-xs rounded-xl flex items-center gap-2.5 font-medium shadow-xs"
         >
-          <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
           <span>{feedbackMessage.text}</span>
         </div>
       )}
 
       {/* Main Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-8 space-y-6 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-8 space-y-6 shadow-xs transition-colors">
           {/* Report Title */}
           <div>
-            <label htmlFor="report-title" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label htmlFor="report-title" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Report Title / Hazard Summary *
             </label>
             <input
@@ -285,12 +285,12 @@ export const CreateReportPage: React.FC = () => {
               placeholder="e.g. Ruptured 6-inch water main causing subgrade erosion"
               aria-invalid={errors.title ? 'true' : 'false'}
               aria-describedby={errors.title ? 'title-error' : undefined}
-              className={`min-h-[44px] w-full text-xs font-medium border rounded-lg p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
-                errors.title ? 'border-red-500 bg-red-50/20' : 'border-slate-300'
+              className={`min-h-[44px] w-full text-xs font-medium border rounded-lg p-3 text-slate-900 dark:text-white bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
+                errors.title ? 'border-red-500 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
               }`}
             />
             {errors.title && (
-              <p id="title-error" role="alert" className="text-xs text-red-600 mt-1.5 font-semibold">
+              <p id="title-error" role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1.5 font-semibold">
                 {errors.title.message}
               </p>
             )}
@@ -299,13 +299,13 @@ export const CreateReportPage: React.FC = () => {
           {/* Category & Priority Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="report-category" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              <label htmlFor="report-category" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Infrastructure Category *
               </label>
               <select
                 id="report-category"
                 {...register('category')}
-                className="min-h-[44px] w-full text-xs font-semibold border border-slate-300 rounded-lg p-3 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="min-h-[44px] w-full text-xs font-semibold border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat.label} value={cat.label}>
@@ -314,14 +314,14 @@ export const CreateReportPage: React.FC = () => {
                 ))}
               </select>
               {errors.category && (
-                <p role="alert" className="text-xs text-red-600 mt-1.5 font-semibold">
+                <p role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1.5 font-semibold">
                   {errors.category.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Priority Assessment *
               </label>
               <div role="radiogroup" aria-label="Priority Level" className="grid grid-cols-4 gap-2">
@@ -348,7 +348,7 @@ export const CreateReportPage: React.FC = () => {
                             : lvl === 'High'
                             ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
                             : 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                       }`}
                     >
                       {lvl}
@@ -357,7 +357,7 @@ export const CreateReportPage: React.FC = () => {
                 })}
               </div>
               {errors.priority && (
-                <p role="alert" className="text-xs text-red-600 mt-1.5 font-semibold">
+                <p role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1.5 font-semibold">
                   {errors.priority.message}
                 </p>
               )}
@@ -367,14 +367,14 @@ export const CreateReportPage: React.FC = () => {
           {/* Location Input with GPS Coordinates */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <label htmlFor="report-location" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              <label htmlFor="report-location" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Location / Facility Description *
               </label>
               <button
                 type="button"
                 onClick={handleCaptureGps}
                 disabled={isCapturingGps}
-                className="min-h-[44px] inline-flex items-center gap-1.5 text-xs text-blue-700 hover:text-blue-900 font-bold px-2 py-1 cursor-pointer"
+                className="min-h-[44px] inline-flex items-center gap-1.5 text-xs text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-bold px-2 py-1 cursor-pointer"
               >
                 <Crosshair className={`w-4 h-4 ${isCapturingGps ? 'animate-spin' : ''}`} />
                 <span>{isCapturingGps ? 'Capturing GPS...' : 'Capture Device GPS'}</span>
@@ -382,7 +382,7 @@ export const CreateReportPage: React.FC = () => {
             </div>
 
             <div className="relative">
-              <MapPin className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5 pointer-events-none" />
+              <MapPin className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
               <input
                 id="report-location"
                 type="text"
@@ -390,35 +390,35 @@ export const CreateReportPage: React.FC = () => {
                 placeholder="e.g. North Perimeter Road KM 12.4, near Pump Station 02"
                 aria-invalid={errors.address ? 'true' : 'false'}
                 aria-describedby={errors.address ? 'address-error' : undefined}
-                className={`min-h-[44px] w-full text-xs font-medium border rounded-lg py-3 pl-10 pr-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
-                  errors.address ? 'border-red-500 bg-red-50/20' : 'border-slate-300'
+                className={`min-h-[44px] w-full text-xs font-medium border rounded-lg py-3 pl-10 pr-3 text-slate-900 dark:text-white bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
+                  errors.address ? 'border-red-500 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
                 }`}
               />
             </div>
             {errors.address && (
-              <p id="address-error" role="alert" className="text-xs text-red-600 mt-1 font-semibold">
+              <p id="address-error" role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1 font-semibold">
                 {errors.address.message}
               </p>
             )}
 
             {/* GPS coordinates readout */}
             {watchedLat !== null && watchedLat !== undefined && (
-              <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-lg text-xs text-blue-950 flex items-center justify-between font-mono">
+              <div className="p-3 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-lg text-xs text-blue-950 dark:text-blue-200 flex items-center justify-between font-mono">
                 <span className="font-semibold">
                   Lat: {Number(watchedLat).toFixed(5)}, Lon: {Number(watchedLon).toFixed(5)}
                 </span>
-                <span className="text-xs font-bold text-blue-800">Coordinates Locked</span>
+                <span className="text-xs font-bold text-blue-800 dark:text-blue-300">Coordinates Locked</span>
               </div>
             )}
 
             {gpsError && (
-              <p role="alert" className="text-xs text-amber-800 font-medium">{gpsError}</p>
+              <p role="alert" className="text-xs text-amber-800 dark:text-amber-300 font-medium">{gpsError}</p>
             )}
           </div>
 
           {/* Description Textarea */}
           <div>
-            <label htmlFor="report-description" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label htmlFor="report-description" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Detailed Technical Description *
             </label>
             <textarea
@@ -428,12 +428,12 @@ export const CreateReportPage: React.FC = () => {
               placeholder="Describe physical damage, observed leak volume, affected equipment model numbers, and safety hazards to personnel..."
               aria-invalid={errors.description ? 'true' : 'false'}
               aria-describedby={errors.description ? 'description-error' : undefined}
-              className={`w-full text-xs font-medium border rounded-lg p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
-                errors.description ? 'border-red-500 bg-red-50/20' : 'border-slate-300'
+              className={`w-full text-xs font-medium border rounded-lg p-3 text-slate-900 dark:text-white bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 ${
+                errors.description ? 'border-red-500 bg-red-50/20' : 'border-slate-300 dark:border-slate-700'
               }`}
             />
             {errors.description && (
-              <p id="description-error" role="alert" className="text-xs text-red-600 mt-1.5 font-semibold">
+              <p id="description-error" role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1.5 font-semibold">
                 {errors.description.message}
               </p>
             )}
@@ -441,20 +441,20 @@ export const CreateReportPage: React.FC = () => {
 
           {/* Date and Time Selector */}
           <div>
-            <label htmlFor="report-datetime" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label htmlFor="report-datetime" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Observation Date & Time *
             </label>
             <div className="relative">
-              <Calendar className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5 pointer-events-none" />
+              <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
               <input
                 id="report-datetime"
                 type="datetime-local"
                 {...register('reportedAt')}
-                className="min-h-[44px] w-full text-xs border border-slate-300 rounded-lg py-3 pl-10 pr-3 text-slate-900 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white"
+                className="min-h-[44px] w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg py-3 pl-10 pr-3 text-slate-900 dark:text-white font-mono font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white dark:bg-slate-950"
               />
             </div>
             {errors.reportedAt && (
-              <p role="alert" className="text-xs text-red-600 mt-1 font-semibold">
+              <p role="alert" className="text-xs text-red-600 dark:text-red-400 mt-1 font-semibold">
                 {errors.reportedAt.message}
               </p>
             )}
@@ -467,7 +467,7 @@ export const CreateReportPage: React.FC = () => {
             type="button"
             onClick={handleSubmit(onSaveDraft)}
             disabled={isSubmitting}
-            className="min-h-[44px] w-full sm:w-auto px-5 py-2.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="min-h-[44px] w-full sm:w-auto px-5 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>Save as Local Draft</span>
@@ -476,7 +476,7 @@ export const CreateReportPage: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="min-h-[44px] w-full sm:w-auto px-6 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] text-white text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="min-h-[44px] w-full sm:w-auto px-6 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <Send className="w-4 h-4" />
             <span>{isSubmitting ? 'Processing Submission...' : 'Submit Infrastructure Report'}</span>

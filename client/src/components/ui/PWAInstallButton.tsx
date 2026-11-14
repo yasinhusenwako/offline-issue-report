@@ -16,7 +16,7 @@ export const PWAInstallButton: React.FC<{ variant?: 'compact' | 'full' }> = ({ v
     return (
       <button
         onClick={install}
-        className={`min-h-[44px] flex items-center gap-2 rounded-lg bg-[#163A5F] text-white hover:bg-[#1E4B7A] transition-colors font-bold text-xs shadow-xs cursor-pointer ${
+        className={`min-h-[44px] flex items-center gap-2 rounded-lg bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition-colors font-bold text-xs shadow-xs cursor-pointer ${
           variant === 'full' ? 'w-full justify-center px-4 py-2.5' : 'px-3 py-2'
         }`}
         title="Install InfraSync as a standalone offline PWA"
@@ -34,12 +34,12 @@ export const PWAInstallButton: React.FC<{ variant?: 'compact' | 'full' }> = ({ v
       <>
         <button
           onClick={() => setShowIOSGuide(true)}
-          className={`min-h-[44px] flex items-center gap-2 rounded-lg border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 transition-colors font-bold text-xs cursor-pointer ${
+          className={`min-h-[44px] flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-bold text-xs cursor-pointer ${
             variant === 'full' ? 'w-full justify-center px-4 py-2.5' : 'px-3 py-2'
           }`}
           aria-label="Install InfraSync on iOS Safari"
         >
-          <Smartphone className="w-4 h-4 text-blue-700" />
+          <Smartphone className="w-4 h-4 text-blue-700 dark:text-blue-400" />
           <span>Install on iOS</span>
         </button>
 
@@ -50,27 +50,27 @@ export const PWAInstallButton: React.FC<{ variant?: 'compact' | 'full' }> = ({ v
             aria-labelledby="ios-guide-title"
             className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
           >
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h2 id="ios-guide-title" className="text-sm font-bold text-slate-900">
+            <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h2 id="ios-guide-title" className="text-sm font-bold text-slate-900 dark:text-white">
                   Install on iPhone / iPad
                 </h2>
                 <button
                   onClick={() => setShowIOSGuide(false)}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 hover:text-slate-800 p-1"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 p-1"
                   aria-label="Close guide"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="mt-3 text-xs text-slate-700 leading-relaxed font-medium">
+              <p className="mt-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                 1. Tap the <strong>Share</strong> button in the Safari toolbar at the bottom.<br />
                 2. Scroll down and tap <strong>Add to Home Screen</strong>.<br />
                 3. Open InfraSync from your home screen for full offline functionality.
               </p>
               <button
                 onClick={() => setShowIOSGuide(false)}
-                className="min-h-[44px] mt-5 w-full rounded-lg bg-[#163A5F] py-2.5 text-xs font-bold text-white hover:bg-[#1E4B7A] transition-colors cursor-pointer"
+                className="min-h-[44px] mt-5 w-full rounded-lg bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-500 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
               >
                 Understood
               </button>

@@ -95,7 +95,7 @@ export const AssignReportModal: React.FC<AssignReportModalProps> = ({
         )}
 
         <div>
-          <label htmlFor="assign-crew-select" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+          <label htmlFor="assign-crew-select" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Select Designated Unit / Team *
           </label>
           <select
@@ -105,7 +105,7 @@ export const AssignReportModal: React.FC<AssignReportModalProps> = ({
               setSelectedCrew(e.target.value);
               if (e.target.value) setCustomCrew('');
             }}
-            className="min-h-[44px] w-full text-xs font-medium border border-slate-300 rounded-lg p-3 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            className="min-h-[44px] w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
           >
             <option value="">-- Choose from available response teams --</option>
             {TECHNICIANS_LIST.map((tech) => (
@@ -117,7 +117,7 @@ export const AssignReportModal: React.FC<AssignReportModalProps> = ({
         </div>
 
         <div>
-          <label htmlFor="custom-crew-input" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+          <label htmlFor="custom-crew-input" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Or Specify Other Team / Technician
           </label>
           <input
@@ -129,12 +129,12 @@ export const AssignReportModal: React.FC<AssignReportModalProps> = ({
               if (e.target.value) setSelectedCrew('');
             }}
             placeholder="e.g. External Structural Specialist Contractors"
-            className="min-h-[44px] w-full text-xs font-medium border border-slate-300 rounded-lg p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            className="min-h-[44px] w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
           />
         </div>
 
         <div>
-          <label htmlFor="dispatch-notes-input" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+          <label htmlFor="dispatch-notes-input" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Dispatch Instructions / Notes (Optional)
           </label>
           <textarea
@@ -143,22 +143,22 @@ export const AssignReportModal: React.FC<AssignReportModalProps> = ({
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder="Specify safety gear, gate clearance codes, or hydraulic tooling..."
-            className="w-full text-xs font-medium border border-slate-300 rounded-lg p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            className="w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-3 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
           />
         </div>
 
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[44px] px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            className="min-h-[44px] px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="min-h-[44px] px-5 py-2.5 text-xs font-bold text-white bg-[#163A5F] hover:bg-[#1E4B7A] rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 shadow-xs cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 text-xs font-bold text-white bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Users className="w-4 h-4" />
             <span>{isSubmitting ? 'Assigning...' : 'Confirm Assignment'}</span>

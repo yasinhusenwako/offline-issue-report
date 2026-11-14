@@ -90,25 +90,25 @@ export const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-slide-up">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
               Field Registry
             </span>
-            <span className="text-slate-300" aria-hidden="true">·</span>
-            <span className="text-xs font-mono font-semibold text-slate-600 tabular-nums">
+            <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
+            <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 tabular-nums">
               {filteredReports.length} matching reports
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Infrastructure Reports
           </h1>
         </div>
 
         <Link
           to="/reports/new"
-          className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
+          className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
         >
           <PlusCircle className="w-4 h-4" />
           <span>New Report</span>
@@ -117,7 +117,7 @@ export const ReportsPage: React.FC = () => {
 
       {/* Horizontal Category Chips Bar - Scrolls horizontally without a visible scrollbar */}
       <div className="space-y-2">
-        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
           Filter by Category
         </label>
         <div
@@ -134,8 +134,8 @@ export const ReportsPage: React.FC = () => {
             aria-pressed={category === 'all' && !onlyFavorites}
             className={`min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none shrink-0 ${
               category === 'all' && !onlyFavorites
-                ? 'bg-[#163A5F] text-white border-[#163A5F] shadow-xs'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                ? 'bg-[#163A5F] dark:bg-blue-600 text-white border-[#163A5F] dark:border-blue-600 shadow-xs'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             All Categories
@@ -154,8 +154,8 @@ export const ReportsPage: React.FC = () => {
                 aria-pressed={isSelected}
                 className={`min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none shrink-0 ${
                   isSelected
-                    ? 'bg-[#163A5F] text-white border-[#163A5F] shadow-xs'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                    ? 'bg-[#163A5F] dark:bg-blue-600 text-white border-[#163A5F] dark:border-blue-600 shadow-xs'
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {cat.label}
@@ -179,7 +179,7 @@ export const ReportsPage: React.FC = () => {
             className={`min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none shrink-0 ${
               onlyFavorites
                 ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-xs'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             <Star className={`w-3.5 h-3.5 ${onlyFavorites ? 'fill-current' : 'text-amber-500'}`} />
@@ -189,24 +189,24 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Toolbar */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs space-y-4 transition-colors">
         {/* Search Bar + Sort */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search reports by ID, keyword, hazard details, or address..."
               aria-label="Search reports"
-              className="w-full text-xs border border-slate-300 rounded-lg py-2.5 pl-10 pr-9 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white"
+              className="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-10 pr-9 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white dark:bg-slate-950"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
                 aria-label="Clear search input"
-                className="min-h-[44px] min-w-[44px] absolute right-0 top-0 flex items-center justify-center text-slate-500 hover:text-slate-800"
+                className="min-h-[44px] min-w-[44px] absolute right-0 top-0 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -220,7 +220,7 @@ export const ReportsPage: React.FC = () => {
                 id="sort-select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="min-h-[44px] text-xs font-semibold border border-slate-300 rounded-lg py-2.5 px-3 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="min-h-[44px] text-xs font-semibold border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 px-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
                 <option value="reportedAt">Sort by Date</option>
                 <option value="priority">Sort by Priority</option>
@@ -230,7 +230,7 @@ export const ReportsPage: React.FC = () => {
 
             <button
               onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-700 transition-colors"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
               aria-label={`Switch sort order to ${sortOrder === 'desc' ? 'Ascending' : 'Descending'}`}
               title={`Switch to ${sortOrder === 'desc' ? 'Ascending' : 'Descending'}`}
             >
@@ -240,16 +240,16 @@ export const ReportsPage: React.FC = () => {
         </div>
 
         {/* Detailed Filter Dropdowns */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
           <div>
-            <label htmlFor="priority-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            <label htmlFor="priority-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
               Priority
             </label>
             <select
               id="priority-filter"
               value={priority}
               onChange={(e) => setPriority(e.target.value as any)}
-              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 rounded-lg p-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               <option value="all">All Priorities</option>
               {PRIORITIES.map((p) => (
@@ -261,14 +261,14 @@ export const ReportsPage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="status-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            <label htmlFor="status-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
               Workflow Status
             </label>
             <select
               id="status-filter"
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 rounded-lg p-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               <option value="all">All Statuses</option>
               {STATUS_ORDER.map((st) => (
@@ -280,14 +280,14 @@ export const ReportsPage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="sync-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            <label htmlFor="sync-filter" className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
               Sync State
             </label>
             <select
               id="sync-filter"
               value={syncStatus}
               onChange={(e) => setSyncStatus(e.target.value as any)}
-              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 rounded-lg p-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="min-h-[44px] w-full text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               <option value="all">All Sync States</option>
               <option value="Pending">Pending Sync</option>

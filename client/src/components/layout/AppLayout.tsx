@@ -10,7 +10,7 @@ export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased text-slate-900">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col antialiased text-slate-900 dark:text-slate-100 transition-colors">
       {/* Skip to Main Content link for keyboard accessibility */}
       <a
         href="#main-content"

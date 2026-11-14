@@ -68,18 +68,18 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8 animate-fade-slide-up">
       {/* Top Welcome & Actions Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
               {role === 'field_worker' ? 'Field Station Terminal' : 'Operations Coordination Center'}
             </span>
-            <span className="text-slate-400" aria-hidden="true">·</span>
-            <span className="text-xs font-mono font-semibold text-slate-600 tabular-nums">
+            <span className="text-slate-400 dark:text-slate-600" aria-hidden="true">·</span>
+            <span className="text-xs font-mono font-semibold text-slate-600 dark:text-slate-400 tabular-nums">
               {animTotal} records stored locally
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Welcome back, {userName}
           </h1>
         </div>
@@ -88,15 +88,15 @@ export const DashboardPage: React.FC = () => {
           <button
             onClick={() => triggerSync()}
             disabled={isSyncing}
-            className="min-h-[44px] flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-lg transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+            className="min-h-[44px] flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-blue-700' : 'text-slate-600'}`} />
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-blue-700 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400'}`} />
             <span>{isSyncing ? 'Synchronizing...' : 'Sync Now'}</span>
           </button>
 
           <Link
             to="/reports/new"
-            className="min-h-[44px] flex items-center gap-2 px-5 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
+            className="min-h-[44px] flex items-center gap-2 px-5 py-2.5 bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Create Report</span>
@@ -145,57 +145,57 @@ export const DashboardPage: React.FC = () => {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-28 bg-white border border-slate-200 rounded-xl p-5 animate-pulse" />
+            <div key={i} className="h-28 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 animate-pulse" />
           ))}
         </div>
       ) : role === 'field_worker' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between text-slate-600 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Total Created</span>
-              <FileText className="w-4 h-4 text-slate-500" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Total Created</span>
+              <FileText className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             </div>
-            <div className="text-3xl font-extrabold font-mono text-slate-900 tabular-nums">
+            <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white tabular-nums">
               {animTotal}
             </div>
-            <div className="text-xs text-slate-600 mt-1.5 font-medium">
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">
               {draftCount} local drafts saved
             </div>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between text-slate-600 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Submitted</span>
-              <CheckCircle2 className="w-4 h-4 text-blue-600" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Submitted</span>
+              <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <div className="text-3xl font-extrabold font-mono text-blue-700 tabular-nums">
+            <div className="text-3xl font-extrabold font-mono text-blue-700 dark:text-blue-400 tabular-nums">
               {animSubmitted}
             </div>
-            <div className="text-xs text-slate-600 mt-1.5 font-medium">Ready for dispatch</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">Ready for dispatch</div>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between text-slate-600 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Pending Sync</span>
-              <Clock className="w-4 h-4 text-amber-600" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Pending Sync</span>
+              <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
-            <div className="text-3xl font-extrabold font-mono text-amber-800 tabular-nums">
+            <div className="text-3xl font-extrabold font-mono text-amber-800 dark:text-amber-300 tabular-nums">
               {animPending}
             </div>
-            <div className="text-xs text-slate-600 mt-1.5 font-medium">Queued in IndexedDB</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">Queued in IndexedDB</div>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between text-slate-600 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Failed Sync</span>
-              <AlertCircle className="w-4 h-4 text-red-600" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Failed Sync</span>
+              <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
             </div>
-            <div className="text-3xl font-extrabold font-mono text-red-700 tabular-nums">
+            <div className="text-3xl font-extrabold font-mono text-red-700 dark:text-red-400 tabular-nums">
               {animFailed}
             </div>
-            <div className="text-xs text-slate-600 mt-1.5 font-medium">
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">
               {failedSyncCount > 0 ? (
-                <Link to="/sync" className="text-red-700 underline font-semibold">
+                <Link to="/sync" className="text-red-700 dark:text-red-400 underline font-semibold">
                   Review & retry queue
                 </Link>
               ) : (
@@ -204,66 +204,66 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center justify-between text-slate-600 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Resolved</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Resolved</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div className="text-3xl font-extrabold font-mono text-emerald-800 tabular-nums">
+            <div className="text-3xl font-extrabold font-mono text-emerald-800 dark:text-emerald-300 tabular-nums">
               {animResolved}
             </div>
-            <div className="text-xs text-slate-600 mt-1.5 font-medium">Repairs completed</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">Repairs completed</div>
           </div>
         </div>
       ) : (
         /* Coordinator Hero Stat Tiles */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 block mb-1">Total Reports</span>
-            <div className="text-3xl font-extrabold font-mono text-slate-900 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block mb-1">Total Reports</span>
+            <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white tabular-nums">
               {animTotal}
             </div>
-            <span className="text-[11px] text-slate-600 font-medium">All logged tickets</span>
+            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">All logged tickets</span>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-800 block mb-1">New Submissions</span>
-            <div className="text-3xl font-extrabold font-mono text-blue-700 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300 block mb-1">New Submissions</span>
+            <div className="text-3xl font-extrabold font-mono text-blue-700 dark:text-blue-400 tabular-nums">
               {animSubmitted}
             </div>
-            <span className="text-[11px] text-blue-800 font-semibold">Needs assignment</span>
+            <span className="text-[11px] text-blue-800 dark:text-blue-300 font-semibold">Needs assignment</span>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-800 block mb-1">Assigned</span>
-            <div className="text-3xl font-extrabold font-mono text-indigo-700 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-800 dark:text-indigo-300 block mb-1">Assigned</span>
+            <div className="text-3xl font-extrabold font-mono text-indigo-700 dark:text-indigo-400 tabular-nums">
               {animAssigned}
             </div>
-            <span className="text-[11px] text-slate-600 font-medium">With field crews</span>
+            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">With field crews</span>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-900 block mb-1">In Progress</span>
-            <div className="text-3xl font-extrabold font-mono text-amber-800 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 block mb-1">In Progress</span>
+            <div className="text-3xl font-extrabold font-mono text-amber-800 dark:text-amber-300 tabular-nums">
               {animInProgress}
             </div>
-            <span className="text-[11px] text-slate-600 font-medium">Active repairs</span>
+            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">Active repairs</span>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-900 block mb-1">Resolved</span>
-            <div className="text-3xl font-extrabold font-mono text-emerald-800 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-900 dark:text-emerald-300 block mb-1">Resolved</span>
+            <div className="text-3xl font-extrabold font-mono text-emerald-800 dark:text-emerald-300 tabular-nums">
               {animResolved}
             </div>
-            <span className="text-[11px] text-emerald-800 font-semibold">Audited & closed</span>
+            <span className="text-[11px] text-emerald-800 dark:text-emerald-300 font-semibold">Audited & closed</span>
           </div>
 
-          <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs hover:border-slate-300 transition-colors">
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-900 block mb-1">Rejected</span>
-            <div className="text-3xl font-extrabold font-mono text-rose-700 tabular-nums">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-900 dark:text-rose-300 block mb-1">Rejected</span>
+            <div className="text-3xl font-extrabold font-mono text-rose-700 dark:text-rose-400 tabular-nums">
               {animRejected}
             </div>
-            <span className="text-[11px] text-slate-600 font-medium">With audit reasons</span>
+            <span className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">With audit reasons</span>
           </div>
         </div>
       )}
@@ -310,12 +310,12 @@ export const DashboardPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Recent Infrastructure Reports</h2>
-            <p className="text-xs text-slate-600">Latest field reports captured on this station</p>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Recent Infrastructure Reports</h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Latest field reports captured on this station</p>
           </div>
           <Link
             to="/reports"
-            className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 px-2 py-1"
+            className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 px-2 py-1"
           >
             <span>View All ({reports.length})</span>
             <ArrowRight className="w-4 h-4" />
@@ -323,46 +323,46 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {recentReports.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-3">
-            <p className="text-xs text-slate-600 font-medium">No reports recorded in local database yet.</p>
+          <div className="p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-3">
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">No reports recorded in local database yet.</p>
             <Link
               to="/reports/new"
-              className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 bg-[#163A5F] text-white rounded-lg text-xs font-bold"
+              className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg text-xs font-bold"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Create First Report</span>
             </Link>
           </div>
         ) : (
-          <div className="border border-slate-200 rounded-xl bg-white overflow-hidden shadow-xs divide-y divide-slate-100">
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 overflow-hidden shadow-xs divide-y divide-slate-100 dark:divide-slate-800">
             {recentReports.map((report) => (
               <div
                 key={report.id}
                 onClick={() => setSelectedReport(report)}
-                className="p-4 sm:p-5 hover:bg-slate-50 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                className="p-4 sm:p-5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
               >
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-xs font-bold text-slate-700">{report.id}</span>
-                    <span className="text-slate-300" aria-hidden="true">·</span>
-                    <span className="text-xs font-semibold text-slate-800">{report.category}</span>
+                    <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-400">{report.id}</span>
+                    <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{report.category}</span>
                     {report.isDraft && (
-                      <span className="bg-amber-100 text-amber-900 text-[10px] px-2 py-0.5 rounded font-bold">
+                      <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 text-[10px] px-2 py-0.5 rounded font-bold">
                         Draft
                       </span>
                     )}
                   </div>
-                  <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
                     {report.title}
                   </h3>
-                  <p className="text-xs text-slate-600 truncate">{report.location.address}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 truncate">{report.location.address}</p>
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <PriorityBadge priority={report.priority} />
                   <StatusBadge status={report.status} />
                   <SyncBadge syncState={report.syncStatus} />
-                  <span className="text-slate-600 font-mono text-[11px] hidden md:inline">
+                  <span className="text-slate-600 dark:text-slate-400 font-mono text-[11px] hidden md:inline">
                     {formatDate(report.reportedAt)}
                   </span>
                   <LikeButton

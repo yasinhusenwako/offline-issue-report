@@ -48,8 +48,8 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       onKeyDown={handleKeyDown}
       className={`min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg p-2 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none ${
         isLiked
-          ? 'text-amber-500 hover:text-amber-600 bg-amber-50/70 hover:bg-amber-100/70'
-          : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+          ? 'text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 dark:hover:bg-amber-900/40'
+          : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
       } ${className}`}
       title={isLiked ? 'Marked as priority follow-up' : 'Star for priority follow-up'}
     >

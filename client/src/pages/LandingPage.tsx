@@ -21,53 +21,55 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
 export const LandingPage: React.FC = () => {
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-blue-100 selection:text-blue-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-100 selection:text-blue-900 flex flex-col font-sans transition-colors">
       {/* ─── STICKY NAVIGATION BAR ─────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
+      <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-[#0E2271] flex items-center justify-center text-white shadow-md shadow-blue-900/10 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#0E2271] dark:bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-900/10 group-hover:scale-105 transition-transform">
               <Database className="w-5 h-5 text-blue-200" />
             </div>
             <div>
-              <span className="font-extrabold text-xl tracking-tight text-[#0E2271] block leading-none">
+              <span className="font-extrabold text-xl tracking-tight text-[#0E2271] dark:text-blue-400 block leading-none">
                 InfraSync
               </span>
-              <span className="text-[10px] text-slate-500 font-mono tracking-wider uppercase block mt-1 font-semibold">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono tracking-wider uppercase block mt-1 font-semibold">
                 Field Mesh System
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            <a href="#features" className="hover:text-[#0E2271] transition-colors">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+            <a href="#features" className="hover:text-[#0E2271] dark:hover:text-blue-400 transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="hover:text-[#0E2271] transition-colors">
+            <a href="#how-it-works" className="hover:text-[#0E2271] dark:hover:text-blue-400 transition-colors">
               How It Works
             </a>
-            <a href="#benefits" className="hover:text-[#0E2271] transition-colors">
+            <a href="#benefits" className="hover:text-[#0E2271] dark:hover:text-blue-400 transition-colors">
               System Benefits
             </a>
-            <a href="#architecture" className="hover:text-[#0E2271] transition-colors">
+            <a href="#architecture" className="hover:text-[#0E2271] dark:hover:text-blue-400 transition-colors">
               Architecture
             </a>
           </nav>
 
           {/* Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
+            <ThemeToggle />
             {user ? (
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] hover:bg-[#1A3580] transition-all shadow-sm shadow-blue-900/10"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] hover:bg-[#1A3580] dark:bg-blue-600 dark:hover:bg-blue-700 transition-all shadow-sm shadow-blue-900/10"
               >
                 <span>Enter Portal</span>
                 <ArrowRight className="w-4 h-4" />
@@ -76,13 +78,13 @@ export const LandingPage: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] hover:bg-[#1A3580] transition-all shadow-sm shadow-blue-900/10"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] hover:bg-[#1A3580] dark:bg-blue-600 dark:hover:bg-blue-700 transition-all shadow-sm shadow-blue-900/10"
                 >
                   <span>Get Started</span>
                   <ArrowRight className="w-4 h-4" />
@@ -92,10 +94,11 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-700 hover:bg-slate-100"
+              className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -105,41 +108,41 @@ export const LandingPage: React.FC = () => {
 
         {/* Mobile dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
+          <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-3 pb-6 space-y-3">
             <a
               href="#features"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-semibold text-slate-700"
+              className="block py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
             >
               Features
             </a>
             <a
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-semibold text-slate-700"
+              className="block py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
             >
               How It Works
             </a>
             <a
               href="#benefits"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-semibold text-slate-700"
+              className="block py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
             >
               System Benefits
             </a>
             <a
               href="#architecture"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-semibold text-slate-700"
+              className="block py-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
             >
               Architecture
             </a>
-            <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               {user ? (
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271]"
+                  className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] dark:bg-blue-600"
                 >
                   Enter Portal
                 </Link>
@@ -148,14 +151,14 @@ export const LandingPage: React.FC = () => {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100"
+                    className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800"
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271]"
+                    className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E2271] dark:bg-blue-600"
                   >
                     Get Started
                   </Link>
@@ -277,81 +280,81 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─── FEATURES SECTION ─────────────────────────────────────────── */}
-      <section id="features" className="py-20 bg-white border-y border-slate-200">
+      <section id="features" className="py-20 bg-white dark:bg-slate-950 border-y border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700">Platform Capabilities</h2>
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Platform Capabilities</h2>
+            <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 dark:text-white tracking-tight">
               Built for Harsh Field Realities & Centralized Oversight
             </p>
-            <p className="text-base text-slate-600">
+            <p className="text-base text-slate-600 dark:text-slate-400">
               Every feature is engineered to preserve reporting velocity without requiring constant connectivity.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-[#0E2271]">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-[#0E2271] dark:text-blue-300">
                 <WifiOff className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">1. Offline-First Reporting</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">1. Offline-First Reporting</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Create and validate infrastructure tickets in tunnels, basements, or remote routes. Forms write to Dexie IndexedDB instantly with guaranteed retention.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
                 <RefreshCw className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">2. Automatic Synchronization</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">2. Automatic Synchronization</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Background listeners detect connection recovery, drain queued requests in batches, and handle idempotent confirmations without generating duplicate tickets.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-800 dark:text-amber-300">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">3. Infrastructure Issue Tracking</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">3. Infrastructure Issue Tracking</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Classify damages across water points, equipment failures, traffic disruptions, and safety hazards with structured location metadata and photos.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-rose-700 dark:text-rose-300">
                 <Layers className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">4. Priority Management</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">4. Priority Management</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Categorize incidents into Low, Medium, High, and Critical triage tiers to route municipal response crews where immediate public safety is at risk.
               </p>
             </div>
 
             {/* Feature 5 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300">
                 <ClipboardCheck className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">5. Maintenance Coordination</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">5. Maintenance Coordination</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Coordinator command center provides role-gated workflows to assign response teams, update statuses, and mandate audit reasons on terminal rejections.
               </p>
             </div>
 
             {/* Feature 6 */}
-            <div className="p-6 rounded-2xl bg-[#F8FAFC] border border-slate-200 hover:border-blue-400 transition-colors space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-700">
+            <div className="p-6 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-700 dark:text-purple-300">
                 <History className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">6. Verifiable Activity History</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">6. Verifiable Activity History</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 Every ticket modification produces an immutable chronological log capturing previous values, new values, user attribution, and server timestamps.
               </p>
             </div>
@@ -360,56 +363,56 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─── HOW IT WORKS ─────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 bg-[#F8FAFC]">
+      <section id="how-it-works" className="py-20 bg-[#F8FAFC] dark:bg-slate-900/40 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700">Workflow Overview</h2>
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Workflow Overview</h2>
+            <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 dark:text-white tracking-tight">
               Four Steps from Hazard Discovery to Audited Resolution
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 relative">
             {/* Step 1 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs relative space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-[#0E2271] text-white flex items-center justify-center font-bold text-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs relative space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0E2271] dark:bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                 1
               </div>
-              <h3 className="font-bold text-base text-slate-900">Report an Issue</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Report an Issue</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Field technicians capture damage descriptions, coordinates, and urgency on mobile or tablet.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs relative space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-[#0E2271] text-white flex items-center justify-center font-bold text-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs relative space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0E2271] dark:bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                 2
               </div>
-              <h3 className="font-bold text-base text-slate-900">Save Locally</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Save Locally</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 The report commits instantly to browser IndexedDB with a permanent client UUID idempotency key.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs relative space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-[#0E2271] text-white flex items-center justify-center font-bold text-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs relative space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0E2271] dark:bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                 3
               </div>
-              <h3 className="font-bold text-base text-slate-900">Batch Synchronize</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Batch Synchronize</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 When network recovers, the sync engine batches queued tickets to the Express API with exponential backoff.
               </p>
             </div>
 
             {/* Step 4 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs relative space-y-3">
-              <div className="w-8 h-8 rounded-lg bg-[#0E2271] text-white flex items-center justify-center font-bold text-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs relative space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0E2271] dark:bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                 4
               </div>
-              <h3 className="font-bold text-base text-slate-900">Triage & Resolve</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Triage & Resolve</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Coordinators assign repair teams, advance through state machines, and close audited work orders.
               </p>
             </div>
@@ -418,48 +421,48 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─── SYSTEM BENEFITS ─────────────────────────────────────────── */}
-      <section id="benefits" className="py-20 bg-white border-y border-slate-200">
+      <section id="benefits" className="py-20 bg-white dark:bg-slate-950 border-y border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700">Proven Operational Gains</h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Proven Operational Gains</h2>
+              <p className="text-3xl sm:text-4xl font-extrabold text-slate-950 dark:text-white tracking-tight">
                 Why Offline Resilience Matters for Modern Municipalities
               </p>
-              <div className="space-y-4 text-sm text-slate-600">
+              <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                   <p>
-                    <strong className="text-slate-900">Reliable reporting in low-connectivity environments:</strong> No lost forms or stalled field work due to intermittent cellular dead zones.
+                    <strong className="text-slate-900 dark:text-white">Reliable reporting in low-connectivity environments:</strong> No lost forms or stalled field work due to intermittent cellular dead zones.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                   <p>
-                    <strong className="text-slate-900">Improved maintenance coordination:</strong> Direct role separation between field workers logging issues and coordinators triaging work.
+                    <strong className="text-slate-900 dark:text-white">Improved maintenance coordination:</strong> Direct role separation between field workers logging issues and coordinators triaging work.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                   <p>
-                    <strong className="text-slate-900">Optimistic concurrency with zero silent overwrites:</strong> Version conflicts (HTTP 409) prompt user-guided visual side-by-side reconciliation.
+                    <strong className="text-slate-900 dark:text-white">Optimistic concurrency with zero silent overwrites:</strong> Version conflicts (HTTP 409) prompt user-guided visual side-by-side reconciliation.
                   </p>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                   <p>
-                    <strong className="text-slate-900">Enterprise security & zero database key leaks:</strong> Frontend uses only Supabase public anon keys; privileged database queries remain locked on the backend.
+                    <strong className="text-slate-900 dark:text-white">Enterprise security & zero database key leaks:</strong> Frontend uses only Supabase public anon keys; privileged database queries remain locked on the backend.
                   </p>
                 </div>
               </div>

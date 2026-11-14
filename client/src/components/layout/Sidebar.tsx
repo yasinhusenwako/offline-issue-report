@@ -59,7 +59,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
   return (
     <aside
       aria-label="Main Navigation"
-      className="w-64 bg-[#163A5F] text-slate-100 flex flex-col h-full border-r border-[#1E4B7A]/60 select-none"
+      className="w-64 bg-[#163A5F] dark:bg-slate-900 text-slate-100 flex flex-col h-full border-r border-[#1E4B7A]/60 dark:border-slate-800 select-none"
     >
       {/* Brand Header */}
       <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10 shrink-0">
@@ -191,7 +191,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
       </div>
 
       {/* User Role Card & Footer */}
-      <div className="p-3.5 border-t border-white/10 bg-[#0F2844] shrink-0">
+      <div className="p-3.5 border-t border-white/10 dark:border-slate-800 bg-[#0F2844] dark:bg-slate-950/80 shrink-0">
         <div className="flex items-center gap-2.5 mb-2.5 overflow-hidden">
           <div className="w-8 h-8 rounded-lg bg-blue-400/20 border border-blue-400/30 flex items-center justify-center text-blue-200 shrink-0">
             {role === 'admin' ? (

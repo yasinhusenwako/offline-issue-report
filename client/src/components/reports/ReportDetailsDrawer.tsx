@@ -131,22 +131,22 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
         {/* Centered Modal Popup */}
         <div
           ref={drawerRef}
-          className="relative w-full max-w-2xl bg-white max-h-[90vh] rounded-2xl shadow-2xl flex flex-col z-10 border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          className="relative w-full max-w-2xl bg-white dark:bg-slate-900 max-h-[90vh] rounded-2xl shadow-2xl flex flex-col z-10 border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-200 transition-colors"
         >
 
           {/* Header */}
-          <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex items-start justify-between bg-slate-50/50 gap-3">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between bg-slate-50/50 dark:bg-slate-800/50 gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="font-mono text-xs font-semibold text-slate-700">{report.id}</span>
+                <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">{report.id}</span>
                 <SyncBadge syncState={report.syncStatus} />
                 {report.isDraft && (
-                  <span className="text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-300 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded">
                     Draft
                   </span>
                 )}
               </div>
-              <h2 id="drawer-title" className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+              <h2 id="drawer-title" className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
                 {report.title}
               </h2>
             </div>
@@ -160,7 +160,7 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
               />
               <button
                 onClick={onClose}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 aria-label="Close report details"
               >
                 <X className="w-5 h-5" />
@@ -169,38 +169,38 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
           </div>
 
           {/* Body Content */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs text-slate-700">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs text-slate-700 dark:text-slate-300">
             {/* Version Conflict Resolution Banner */}
             {report.syncStatus === 'Conflict' && (
-              <div className="p-4 bg-orange-50 border border-orange-300 rounded-xl space-y-3">
-                <div className="flex items-center gap-2 font-bold text-orange-950 text-xs">
-                  <AlertCircle className="w-4 h-4 text-orange-600 shrink-0" />
+              <div className="p-4 bg-orange-50 dark:bg-orange-950/40 border border-orange-300 dark:border-orange-900 rounded-xl space-y-3">
+                <div className="flex items-center gap-2 font-bold text-orange-950 dark:text-orange-200 text-xs">
+                  <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                   <span>Version Conflict Detected (HTTP 409)</span>
                 </div>
-                <p className="text-xs text-orange-900 leading-relaxed">
+                <p className="text-xs text-orange-900 dark:text-orange-300 leading-relaxed">
                   {report.syncError || 'This report was modified on the server while you had pending local changes.'}
                 </p>
                 {report.conflictServerData && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
-                    <div className="p-2.5 bg-white border border-orange-200 rounded-lg space-y-1">
-                      <span className="font-bold text-slate-800 block">
+                    <div className="p-2.5 bg-white dark:bg-slate-900 border border-orange-200 dark:border-orange-900 rounded-lg space-y-1">
+                      <span className="font-bold text-slate-800 dark:text-slate-200 block">
                         Local Version (v{report.version ?? 1})
                       </span>
-                      <p className="text-slate-600">Status: <strong>{report.status}</strong></p>
-                      <p className="text-slate-600">Priority: <strong>{report.priority}</strong></p>
-                      <p className="text-slate-600 line-clamp-2">{report.description}</p>
+                      <p className="text-slate-600 dark:text-slate-400">Status: <strong>{report.status}</strong></p>
+                      <p className="text-slate-600 dark:text-slate-400">Priority: <strong>{report.priority}</strong></p>
+                      <p className="text-slate-600 dark:text-slate-400 line-clamp-2">{report.description}</p>
                     </div>
-                    <div className="p-2.5 bg-white border border-orange-200 rounded-lg space-y-1">
-                      <span className="font-bold text-slate-800 block">
+                    <div className="p-2.5 bg-white dark:bg-slate-900 border border-orange-200 dark:border-orange-900 rounded-lg space-y-1">
+                      <span className="font-bold text-slate-800 dark:text-slate-200 block">
                         Server Version (v{report.conflictServerData.version ?? '?'})
                       </span>
-                      <p className="text-slate-600">
+                      <p className="text-slate-600 dark:text-slate-400">
                         Status: <strong>{report.conflictServerData.status ?? report.status}</strong>
                       </p>
-                      <p className="text-slate-600">
+                      <p className="text-slate-600 dark:text-slate-400">
                         Priority: <strong>{report.conflictServerData.priority ?? report.priority}</strong>
                       </p>
-                      <p className="text-slate-600 line-clamp-2">
+                      <p className="text-slate-600 dark:text-slate-400 line-clamp-2">
                         {report.conflictServerData.description ?? report.description}
                       </p>
                     </div>
@@ -212,7 +212,7 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
                       await syncService.resolveConflict(report.id, 'keep_server');
                       if (onRefresh) onRefresh();
                     }}
-                    className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-lg font-semibold text-xs transition-colors"
+                    className="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg font-semibold text-xs transition-colors"
                   >
                     Keep Server Version
                   </button>
@@ -230,38 +230,38 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
             )}
 
             {/* Quick Status and Priority Matrix */}
-            <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+            <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg">
               <div>
-                <span className="text-[11px] text-slate-600 font-semibold block mb-1">Workflow Status</span>
+                <span className="text-[11px] text-slate-600 dark:text-slate-400 font-semibold block mb-1">Workflow Status</span>
                 <StatusBadge status={report.status} />
               </div>
               <div>
-                <span className="text-[11px] text-slate-600 font-semibold block mb-1">Priority Level</span>
+                <span className="text-[11px] text-slate-600 dark:text-slate-400 font-semibold block mb-1">Priority Level</span>
                 <PriorityBadge priority={report.priority} />
               </div>
             </div>
 
             {/* Rejection Alert if rejected */}
             {report.status === 'Rejected' && report.rejectionReason && (
-              <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg text-rose-900">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-rose-950 mb-1">
-                  <XCircle className="w-4 h-4 text-rose-600" />
+              <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg text-rose-900 dark:text-rose-200">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-rose-950 dark:text-rose-100 mb-1">
+                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                   <span>Rejection Reason</span>
                 </div>
-                <p className="text-xs leading-relaxed text-rose-900">{report.rejectionReason}</p>
+                <p className="text-xs leading-relaxed text-rose-900 dark:text-rose-300">{report.rejectionReason}</p>
               </div>
             )}
 
             {/* Resolution Alert if resolved */}
             {report.status === 'Resolved' && report.resolutionNotes && (
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-950 mb-1">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-lg text-emerald-950 dark:text-emerald-200">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-950 dark:text-emerald-100 mb-1">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                   <span>Maintenance Resolution Summary</span>
                 </div>
-                <p className="text-xs leading-relaxed text-emerald-900">{report.resolutionNotes}</p>
+                <p className="text-xs leading-relaxed text-emerald-900 dark:text-emerald-300">{report.resolutionNotes}</p>
                 {report.resolvedAt && (
-                  <span className="text-[11px] text-emerald-800 mt-2 block font-mono">
+                  <span className="text-[11px] text-emerald-800 dark:text-emerald-300 mt-2 block font-mono">
                     Completed at: {formatDate(report.resolvedAt)}
                   </span>
                 )}
@@ -270,26 +270,26 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
 
             {/* Description */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Issue Description
               </h3>
-              <div className="p-4 bg-white border border-slate-200 rounded-lg leading-relaxed whitespace-pre-wrap text-slate-800">
+              <div className="p-4 bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-lg leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200">
                 {report.description}
               </div>
             </div>
 
             {/* Location & GPS Info */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Location & Coordinates
               </h3>
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg space-y-2">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
-                  <span className="font-semibold text-slate-900">{report.location.address}</span>
+                  <MapPin className="w-4 h-4 text-blue-700 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <span className="font-semibold text-slate-900 dark:text-white">{report.location.address}</span>
                 </div>
                 {report.location.latitude && report.location.longitude && (
-                  <div className="flex items-center gap-3 text-xs font-mono text-slate-600 pt-2 border-t border-slate-200">
+                  <div className="flex items-center gap-3 text-xs font-mono text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-700">
                     <span>Lat: {report.location.latitude.toFixed(5)}</span>
                     <span>Lon: {report.location.longitude.toFixed(5)}</span>
                     {report.location.accuracyMeters && (
@@ -302,20 +302,20 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
 
             {/* Assigned Team & Dispatch Info */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Operational Assignment
               </h3>
-              <div className="p-4 bg-white border border-slate-200 rounded-lg flex items-center justify-between gap-2">
+              <div className="p-4 bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-slate-600" />
-                  <span className="font-medium text-slate-800">
+                  <Users className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
                     {report.assignedTo || 'Unassigned — Awaiting Coordinator Dispatch'}
                   </span>
                 </div>
                 {role === 'coordinator' && (
                   <button
                     onClick={() => setIsAssignModalOpen(true)}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs text-blue-700 hover:text-blue-900 font-semibold underline px-2 py-1"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xs text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-semibold underline px-2 py-1"
                   >
                     {report.assignedTo ? 'Reassign' : 'Assign Crew'}
                   </button>
@@ -324,27 +324,27 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
             </div>
 
             {/* Report Metadata Details */}
-            <div className="space-y-2 text-xs border-t border-slate-200 pt-4">
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600">Reported By</span>
-                <span className="font-semibold text-slate-900">
+            <div className="space-y-2 text-xs border-t border-slate-200 dark:border-slate-700 pt-4">
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">Reported By</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
                   {report.authorName} ({report.authorId})
                 </span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600">Category</span>
-                <span className="font-semibold text-slate-900">{report.category}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">Category</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{report.category}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600">Report Date</span>
-                <span className="font-mono text-slate-800">{formatDate(report.reportedAt)}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">Report Date</span>
+                <span className="font-mono text-slate-800 dark:text-slate-200">{formatDate(report.reportedAt)}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-600">Last Modified</span>
-                <span className="font-mono text-slate-800">{formatDate(report.updatedAt)}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-600 dark:text-slate-400">Last Modified</span>
+                <span className="font-mono text-slate-800 dark:text-slate-200">{formatDate(report.updatedAt)}</span>
               </div>
               {report.syncError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg text-red-800 dark:text-red-300">
                   <span className="font-bold block mb-0.5">Sync Error:</span>
                   <span>{report.syncError}</span>
                 </div>
@@ -353,23 +353,23 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
 
             {/* Item Activity Timeline */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
                 Activity Audit Trail
               </h3>
               <div className="space-y-3">
                 {activities.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic">No activity entries recorded yet.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 italic">No activity entries recorded yet.</p>
                 ) : (
                   activities.map((act) => (
-                    <div key={act.id} className="relative pl-4 pb-2 border-l border-slate-200">
-                      <div className="absolute -left-1.5 top-0.5 w-3 h-3 rounded-full bg-slate-400 border-2 border-white" />
+                    <div key={act.id} className="relative pl-4 pb-2 border-l border-slate-200 dark:border-slate-700">
+                      <div className="absolute -left-1.5 top-0.5 w-3 h-3 rounded-full bg-slate-400 dark:bg-slate-600 border-2 border-white dark:border-slate-900" />
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-900">{act.userName}</span>
-                        <span className="text-[11px] text-slate-500 font-mono">
+                        <span className="font-semibold text-slate-900 dark:text-white">{act.userName}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                           {formatDate(act.timestamp)}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-0.5">{act.description}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{act.description}</p>
                     </div>
                   ))
                 )}
@@ -378,7 +378,7 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
           </div>
 
           {/* Footer Action Bar */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2 shrink-0">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-between gap-2 shrink-0">
             {report.syncStatus === 'Failed' && (
               <button
                 onClick={handleManualSync}
@@ -403,13 +403,13 @@ export const ReportDetailsDrawer: React.FC<ReportDetailsDrawerProps> = ({
               <div className="flex items-center gap-2 ml-auto">
                 <button
                   onClick={() => setIsAssignModalOpen(true)}
-                  className="min-h-[44px] px-3.5 py-2 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 rounded-lg text-xs font-semibold transition-colors"
+                  className="min-h-[44px] px-3.5 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg text-xs font-semibold transition-colors"
                 >
                   Assign Crew
                 </button>
                 <button
                   onClick={() => setIsStatusModalOpen(true)}
-                  className="min-h-[44px] px-4 py-2 bg-[#163A5F] hover:bg-[#1E4B7A] text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
+                  className="min-h-[44px] px-4 py-2 bg-[#163A5F] hover:bg-[#1E4B7A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
                 >
                   Change Status
                 </button>
