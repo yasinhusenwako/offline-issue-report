@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Database, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, HardHat, Shield } from 'lucide-react';
+import { Database, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, HardHat, Shield, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const LoginPage: React.FC = () => {
@@ -57,6 +57,16 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 mb-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-[#0E2271] transition-colors py-1.5 px-3 rounded-lg hover:bg-slate-200/60"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center px-4">
         <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
           <div className="w-10 h-10 rounded-xl bg-[#0E2271] flex items-center justify-center text-white shadow-md shadow-blue-900/10 group-hover:scale-105 transition-transform">
