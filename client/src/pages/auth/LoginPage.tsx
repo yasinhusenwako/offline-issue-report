@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Database, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Database, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, HardHat, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const LoginPage: React.FC = () => {
@@ -12,6 +12,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingRole, setSubmittingRole] = useState<'field' | 'coordinator' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
@@ -31,6 +32,24 @@ export const LoginPage: React.FC = () => {
     if (error) {
       setErrorMessage(error.message || 'Invalid login credentials. Please verify your details.');
       setIsSubmitting(false);
+    } else {
+      navigate(from, { replace: true });
+    }
+  };
+
+  const handleDemoLogin = async (demoEmail: string, demoPass: string, role: 'field' | 'coordinator') => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+    setIsSubmitting(true);
+    setSubmittingRole(role);
+    setErrorMessage(null);
+
+    const { error } = await signIn(demoEmail, demoPass);
+
+    if (error) {
+      setErrorMessage(error.message || 'Demo authentication failed. Please retry.');
+      setIsSubmitting(false);
+      setSubmittingRole(null);
     } else {
       navigate(from, { replace: true });
     }
@@ -57,6 +76,44 @@ export const LoginPage: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="bg-white py-8 px-6 sm:px-10 shadow-sm border border-slate-200 rounded-2xl">
+          {/* Quick Demo Access Buttons */}
+          <div className="mb-6 pb-6 border-b border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2.5 text-center">
+              One-Click Demo Accounts
+            </span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleDemoLogin('field@infrasync.org', 'FieldWorker123!', 'field')}
+                className="flex flex-col items-center justify-center p-3 rounded-xl border border-amber-200 bg-amber-50/60 hover:bg-amber-100/70 text-slate-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group text-center"
+              >
+                <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 mb-1.5 group-hover:scale-105 transition-transform">
+                  <HardHat className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold text-slate-900">Field Worker</span>
+                <span className="text-[10px] text-amber-800 font-medium mt-0.5">
+                  {submittingRole === 'field' ? 'Signing in...' : 'Offline Reporting'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleDemoLogin('coordinator@infrasync.org', 'Coordinator123!', 'coordinator')}
+                className="flex flex-col items-center justify-center p-3 rounded-xl border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100/70 text-slate-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group text-center"
+              >
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 border border-indigo-300 flex items-center justify-center text-indigo-800 mb-1.5 group-hover:scale-105 transition-transform">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold text-slate-900">Coordinator</span>
+                <span className="text-[10px] text-indigo-800 font-medium mt-0.5">
+                  {submittingRole === 'coordinator' ? 'Signing in...' : 'Triage & Assign'}
+                </span>
+              </button>
+            </div>
+          </div>
+
           {errorMessage && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-800 text-sm">
               <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
@@ -110,7 +167,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -123,7 +180,7 @@ export const LoginPage: React.FC = () => {
               disabled={isSubmitting}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-[#0E2271] hover:bg-[#1A3580] transition-colors shadow-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
+              {isSubmitting && !submittingRole ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Signing in...</span>
