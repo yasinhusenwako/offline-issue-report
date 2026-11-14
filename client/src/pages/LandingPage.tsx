@@ -171,21 +171,24 @@ export const LandingPage: React.FC = () => {
 
       {/* ─── HERO SECTION ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Ambient background glow in dark mode */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-blue-500/5 dark:bg-blue-600/15 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             {/* Left Copy */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0E2271] text-xs font-bold tracking-wide">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#0E2271] dark:text-blue-300 text-xs font-bold tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>OFFLINE-FIRST ARCHITECTURE &bull; BUILT BY NILEPIXEL TECHNOLOGIES</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 leading-[1.12]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 dark:text-white leading-[1.12]">
                 Smarter Infrastructure Reporting.{' '}
-                <span className="text-[#0E2271] block">Faster Maintenance Response.</span>
+                <span className="text-[#0E2271] dark:text-blue-400 block">Faster Maintenance Response.</span>
               </h1>
 
-              <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">
+              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
                 Report infrastructure problems, coordinate maintenance activities, and monitor service
                 improvements through one reliable platform — even when internet connectivity is unavailable.
               </p>
@@ -194,40 +197,43 @@ export const LandingPage: React.FC = () => {
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
                   to={user ? '/dashboard' : '/register'}
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl text-base font-bold text-white bg-[#0E2271] hover:bg-[#1A3580] transition-all shadow-lg shadow-blue-950/15"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl text-base font-bold text-white bg-[#0E2271] hover:bg-[#1A3580] dark:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-lg shadow-blue-950/15 dark:shadow-blue-900/30"
                 >
                   <span>{user ? 'Open Dashboard' : 'Get Started'}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <a
                   href="#features"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-colors shadow-xs"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 transition-colors shadow-xs"
                 >
                   <span>Explore Features</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                  <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </a>
               </div>
 
               {/* Trust & Proof Metrics */}
-              <div className="pt-6 border-t border-slate-200/80 grid grid-cols-3 gap-6 text-left">
+              <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 grid grid-cols-3 gap-6 text-left">
                 <div>
-                  <div className="font-extrabold text-2xl text-[#0E2271] font-mono">100%</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Offline Persistence</div>
+                  <div className="font-extrabold text-2xl text-[#0E2271] dark:text-blue-400 font-mono">100%</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Offline Persistence</div>
                 </div>
                 <div>
-                  <div className="font-extrabold text-2xl text-[#0E2271] font-mono">&lt; 15ms</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">IndexedDB Commit</div>
+                  <div className="font-extrabold text-2xl text-[#0E2271] dark:text-blue-400 font-mono">&lt; 15ms</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">IndexedDB Commit</div>
                 </div>
                 <div>
-                  <div className="font-extrabold text-2xl text-[#0E2271] font-mono">Zero</div>
-                  <div className="text-xs text-slate-500 font-medium mt-0.5">Data Loss On Reload</div>
+                  <div className="font-extrabold text-2xl text-[#0E2271] dark:text-blue-400 font-mono">Zero</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Data Loss On Reload</div>
                 </div>
               </div>
             </div>
 
             {/* Right Dashboard Visual Card Preview */}
             <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-md lg:max-w-none rounded-2xl bg-gradient-to-br from-[#0E2271] to-[#1A3580] p-6 shadow-2xl text-white border border-blue-900">
+              {/* Card Ambient Glow in Dark Mode */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 dark:opacity-30 blur-xl pointer-events-none transition-opacity" />
+
+              <div className="relative mx-auto max-w-md lg:max-w-none rounded-2xl bg-gradient-to-br from-[#0E2271] to-[#1A3580] dark:from-slate-900 dark:via-[#0E2255] dark:to-slate-950 p-6 shadow-2xl text-white border border-blue-900 dark:border-slate-800 shadow-blue-950/20 dark:shadow-black/60">
                 {/* Header status bar */}
                 <div className="flex items-center justify-between pb-4 border-b border-white/10">
                   <div className="flex items-center gap-2">
@@ -235,7 +241,7 @@ export const LandingPage: React.FC = () => {
                     <div className="w-3 h-3 rounded-full bg-amber-400" />
                     <div className="w-3 h-3 rounded-full bg-emerald-400" />
                   </div>
-                  <div className="text-[11px] font-mono bg-white/10 px-2.5 py-1 rounded text-blue-200 font-bold flex items-center gap-1.5">
+                  <div className="text-[11px] font-mono bg-white/10 px-2.5 py-1 rounded text-blue-200 dark:text-blue-300 font-bold flex items-center gap-1.5">
                     <WifiOff className="w-3 h-3 text-amber-300" />
                     <span>LOCAL DISK GUARANTEED</span>
                   </div>
@@ -243,33 +249,33 @@ export const LandingPage: React.FC = () => {
 
                 {/* Simulated Incident Card */}
                 <div className="mt-5 space-y-4">
-                  <div className="bg-white/10 rounded-xl p-4 border border-white/10 backdrop-blur-xs">
-                    <div className="flex items-center justify-between text-xs font-mono text-blue-200 mb-1.5">
+                  <div className="bg-white/10 dark:bg-slate-800/70 rounded-xl p-4 border border-white/10 dark:border-slate-700/60 backdrop-blur-xs">
+                    <div className="flex items-center justify-between text-xs font-mono text-blue-200 dark:text-blue-300 mb-1.5">
                       <span>CLIENT-UUID: 0ce4da04...</span>
                       <span className="bg-amber-400 text-slate-950 px-2 py-0.5 rounded font-extrabold text-[10px]">
                         PENDING SYNC
                       </span>
                     </div>
                     <div className="font-bold text-base text-white">Transformer Cooling Valve Rupture</div>
-                    <div className="flex items-center gap-1.5 text-xs text-blue-200 mt-1">
+                    <div className="flex items-center gap-1.5 text-xs text-blue-200 dark:text-slate-300 mt-1">
                       <MapPin className="w-3.5 h-3.5 text-amber-300" />
                       <span>North Substation, Bay #4 (Offline captured)</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                      <span className="text-[11px] text-blue-200 uppercase font-semibold block">Priority</span>
+                    <div className="bg-white/5 dark:bg-slate-800/50 p-3 rounded-xl border border-white/10 dark:border-slate-700/50">
+                      <span className="text-[11px] text-blue-200 dark:text-slate-400 uppercase font-semibold block">Priority</span>
                       <span className="text-sm font-bold text-red-400 mt-0.5 block">Critical Impact</span>
                     </div>
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                      <span className="text-[11px] text-blue-200 uppercase font-semibold block">Workflow</span>
-                      <span className="text-sm font-bold text-emerald-300 mt-0.5 block">Submitted</span>
+                    <div className="bg-white/5 dark:bg-slate-800/50 p-3 rounded-xl border border-white/10 dark:border-slate-700/50">
+                      <span className="text-[11px] text-blue-200 dark:text-slate-400 uppercase font-semibold block">Workflow</span>
+                      <span className="text-sm font-bold text-emerald-300 dark:text-emerald-400 mt-0.5 block">Submitted</span>
                     </div>
                   </div>
 
-                  <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 flex items-center justify-between text-xs">
-                    <span className="text-blue-200">Auto-sync on network reconnect:</span>
+                  <div className="bg-white/5 dark:bg-slate-800/50 p-3.5 rounded-xl border border-white/10 dark:border-slate-700/50 flex items-center justify-between text-xs">
+                    <span className="text-blue-200 dark:text-slate-300">Auto-sync on network reconnect:</span>
                     <span className="text-emerald-400 font-bold font-mono">ACTIVE</span>
                   </div>
                 </div>
@@ -468,19 +474,19 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            <div id="architecture" className="p-8 rounded-2xl bg-[#0E2271] text-white space-y-6">
+            <div id="architecture" className="p-8 rounded-2xl bg-[#0E2271] dark:bg-slate-900 border border-transparent dark:border-slate-800 text-white space-y-6">
               <h3 className="font-extrabold text-xl text-white">Full-Stack Tech Stack</h3>
               <div className="space-y-4 text-xs font-mono">
-                <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                  <span className="text-blue-300 block font-bold">CLIENT TIER</span>
+                <div className="p-3 bg-white/10 dark:bg-slate-800/80 rounded-xl border border-white/10 dark:border-slate-700/60">
+                  <span className="text-blue-300 dark:text-blue-400 block font-bold">CLIENT TIER</span>
                   <span className="text-slate-200">React 19 + TypeScript + Vite + Tailwind CSS v4 + Dexie.js (IndexedDB) + PWA</span>
                 </div>
-                <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                  <span className="text-blue-300 block font-bold">SERVER API</span>
+                <div className="p-3 bg-white/10 dark:bg-slate-800/80 rounded-xl border border-white/10 dark:border-slate-700/60">
+                  <span className="text-blue-300 dark:text-blue-400 block font-bold">SERVER API</span>
                   <span className="text-slate-200">Node.js Express + TypeScript + Helmet + CORS Wildcards + Rate Limiting</span>
                 </div>
-                <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                  <span className="text-blue-300 block font-bold">PERSISTENCE</span>
+                <div className="p-3 bg-white/10 dark:bg-slate-800/80 rounded-xl border border-white/10 dark:border-slate-700/60">
+                  <span className="text-blue-300 dark:text-blue-400 block font-bold">PERSISTENCE</span>
                   <span className="text-slate-200">Supabase Managed PostgreSQL + Row-Level Security (RLS) + Auth triggers</span>
                 </div>
               </div>
@@ -490,18 +496,18 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ─── CALL TO ACTION ───────────────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-br from-[#0E2271] to-[#1A3580] text-white">
+      <section className="py-20 bg-gradient-to-br from-[#0E2271] to-[#1A3580] dark:from-slate-900 dark:via-[#0E2255] dark:to-slate-950 border-t border-transparent dark:border-slate-800 text-white transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Ready to Improve Infrastructure Reporting?
           </h2>
-          <p className="text-base text-blue-200 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base text-blue-200 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
             Start reporting infrastructure issues and help coordinate faster maintenance responses across your district.
           </p>
           <div className="pt-2">
             <Link
               to={user ? '/dashboard' : '/register'}
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-base font-bold text-[#0E2271] bg-white hover:bg-slate-100 transition-colors shadow-xl"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-base font-bold text-[#0E2271] dark:text-slate-950 bg-white hover:bg-slate-100 dark:bg-white dark:hover:bg-slate-200 transition-colors shadow-xl"
             >
               <span>{user ? 'Access Dashboard' : 'Access the Platform'}</span>
               <ArrowRight className="w-5 h-5" />
