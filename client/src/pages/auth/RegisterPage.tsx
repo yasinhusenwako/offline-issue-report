@@ -109,14 +109,6 @@ export const RegisterPage: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Demo Account Prompt */}
-              <div className="mb-5 p-3 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-between text-xs">
-                <span className="text-slate-700">Need instant testing without email limits?</span>
-                <Link to="/login" className="font-bold text-[#0E2271] hover:underline shrink-0 ml-2">
-                  Use Demo Logins &rarr;
-                </Link>
-              </div>
-
               {errorMessage && (
                 <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-800 text-sm">
                   <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />

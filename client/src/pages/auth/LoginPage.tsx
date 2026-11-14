@@ -86,24 +86,27 @@ export const LoginPage: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="bg-white py-8 px-6 sm:px-10 shadow-sm border border-slate-200 rounded-2xl">
-          {/* Quick Demo Access Buttons */}
-          <div className="mb-6 pb-6 border-b border-slate-100">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2.5 text-center">
-              One-Click Demo Accounts
-            </span>
-            <div className="grid grid-cols-2 gap-2.5">
+          {/* Quick Demo Access (Minimized for testing only) */}
+          <div className="mb-6 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Quick Access
+              </span>
+              <span className="text-[10px] text-amber-800 font-medium">
+                * Demo accounts for testing only
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => handleDemoLogin('field@infrasync.org', 'FieldWorker123!', 'field')}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-amber-200 bg-amber-50/60 hover:bg-amber-100/70 text-slate-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group text-center"
+                className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-amber-200 bg-white hover:bg-amber-50 text-slate-800 transition-colors cursor-pointer text-xs font-semibold disabled:opacity-50 shadow-2xs"
+                title="Demo Field Worker: Elena Rostova (testing only)"
               >
-                <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 mb-1.5 group-hover:scale-105 transition-transform">
-                  <HardHat className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-bold text-slate-900">Field Worker</span>
-                <span className="text-[10px] text-amber-800 font-medium mt-0.5">
-                  {submittingRole === 'field' ? 'Signing in...' : 'Offline Reporting'}
+                <HardHat className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span className="truncate">
+                  {submittingRole === 'field' ? 'Signing in...' : 'Field Worker'}
                 </span>
               </button>
 
@@ -111,14 +114,12 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => handleDemoLogin('coordinator@infrasync.org', 'Coordinator123!', 'coordinator')}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100/70 text-slate-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed group text-center"
+                className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-indigo-200 bg-white hover:bg-indigo-50 text-slate-800 transition-colors cursor-pointer text-xs font-semibold disabled:opacity-50 shadow-2xs"
+                title="Demo Coordinator: David Miller (testing only)"
               >
-                <div className="w-8 h-8 rounded-lg bg-indigo-100 border border-indigo-300 flex items-center justify-center text-indigo-800 mb-1.5 group-hover:scale-105 transition-transform">
-                  <Shield className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-bold text-slate-900">Coordinator</span>
-                <span className="text-[10px] text-indigo-800 font-medium mt-0.5">
-                  {submittingRole === 'coordinator' ? 'Signing in...' : 'Triage & Assign'}
+                <Shield className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <span className="truncate">
+                  {submittingRole === 'coordinator' ? 'Signing in...' : 'Coordinator'}
                 </span>
               </button>
             </div>
