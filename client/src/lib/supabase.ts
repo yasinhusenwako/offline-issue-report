@@ -1,16 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Default to the project's Supabase URL and public publishable key if VITE_* env vars are not set at build time
+const DEFAULT_SUPABASE_URL = 'https://kdurnjmiegdqnimsiffp.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_1JVu-GHMQq4HnsEdfofM7w_T4GD6SA-';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    '[InfraSync] Supabase URL or Anon Key is missing in environment variables. Real-time auth requests will fail until configured.'
-  );
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
-// Client-side singleton Supabase client using only the public anon key
-export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder-anon-key', {
+// Client-side singleton Supabase client using only the public publishable anon key
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
