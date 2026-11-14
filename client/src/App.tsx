@@ -90,11 +90,11 @@ export default function App() {
                   }
                 />
 
-                {/* Administrator Only Routes */}
+                {/* Administrator & Coordinator Routes */}
                 <Route
                   path="admin/users"
                   element={
-                    <ProtectedRoute allowedRoles={['admin']}>
+                    <ProtectedRoute allowedRoles={['admin', 'coordinator']}>
                       <UserManagementPage />
                     </ProtectedRoute>
                   }

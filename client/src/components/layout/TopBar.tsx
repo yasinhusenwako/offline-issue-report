@@ -149,7 +149,7 @@ export const TopBar: React.FC<{ onMobileMenuToggle: () => void }> = ({ onMobileM
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{role.replace('_', ' ')}</div>
               </div>
 
-              {role === 'admin' && (
+              {(role === 'admin' || role === 'coordinator') && (
                 <Link
                   to="/admin/users"
                   onClick={() => setUserMenuOpen(false)}

@@ -55,14 +55,14 @@ CREATE POLICY "Users can view own profile"
   FOR SELECT
   USING (auth.uid() = id);
 
--- Allow authenticated users with admin role to view all profiles
-CREATE POLICY "Admins can view all profiles"
+-- Allow authenticated users with admin or coordinator role to view all profiles
+CREATE POLICY "Admins and coordinators can view all profiles"
   ON public.profiles
   FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
+      WHERE id = auth.uid() AND role IN ('admin', 'coordinator')
     )
   );
 

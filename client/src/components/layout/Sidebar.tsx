@@ -44,7 +44,7 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
   ];
 
   const adminNav = [
-    { label: 'User & Role Access', path: '/admin/users', icon: Users },
+    { label: 'User Management', path: '/admin/users', icon: Users },
   ];
 
   const handleLinkClick = () => {
@@ -143,13 +143,13 @@ export const Sidebar: React.FC<{ onCloseMobile?: () => void }> = ({ onCloseMobil
           </div>
         )}
 
-        {/* Admin Specific Workflows */}
-        {role === 'admin' && (
+        {/* Admin & Coordinator Specific Workflows */}
+        {(role === 'admin' || role === 'coordinator') && (
           <div>
             <div className="px-3 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-purple-200">
               <span>Administration</span>
               <span className="bg-purple-500/30 border border-purple-400/40 text-purple-100 text-[10px] px-1.5 py-0.2 rounded font-bold">
-                Admin
+                {role === 'admin' ? 'Admin' : 'Coord'}
               </span>
             </div>
             <nav aria-label="Administrator links" className="space-y-1">

@@ -48,8 +48,8 @@ export const UserManagementPage: React.FC = () => {
   }, []);
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
-    if (userId === currentUser?.id && newRole !== 'admin') {
-      if (!confirm('Warning: Demoting yourself will remove administrator privileges immediately. Proceed?')) {
+    if (userId === currentUser?.id && newRole !== currentUser?.role) {
+      if (!confirm(`Warning: Changing your own role to ${newRole} may alter your access privileges immediately. Proceed?`)) {
         return;
       }
     }
