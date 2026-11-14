@@ -218,6 +218,10 @@ export const LoginPage: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>Encrypted offline session cached for low-connectivity triage.</span>
           </div>
+
+          <p className="mt-6 text-center text-xs text-slate-400">
+            Built by <span className="text-slate-600 font-medium">NilePixel Technologies</span>
+          </p>
         </div>
       </div>
     </div>

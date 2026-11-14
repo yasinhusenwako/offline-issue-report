@@ -228,6 +228,10 @@ export const RegisterPage: React.FC = () => {
                   Public registrations are assigned default <strong>Field Worker</strong> credentials.
                 </span>
               </div>
+
+              <p className="mt-6 text-center text-xs text-slate-400">
+                Built by <span className="text-slate-600 font-medium">NilePixel Technologies</span>
+              </p>
             </>
           )}
         </div>

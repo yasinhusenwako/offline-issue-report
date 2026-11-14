@@ -1,5 +1,7 @@
 # Offline Infrastructure Reporting and Maintenance Management System
 
+> Built by **NilePixel Technologies**
+
 A full-stack web application for reporting infrastructure problems, managing maintenance requests, and coordinating field operations — with offline-first reporting and automatic synchronization when internet connectivity is restored.
 
 ## 1. Project Overview
@@ -735,4 +737,4 @@ The project can be extended into a more comprehensive infrastructure management 
 
 **Repository:** (https://github.com/yasinhusenwako/offline-issue-report)
 
-**Developed By:** Yasin Husen
+**Developed By:** NilePixel Technologies

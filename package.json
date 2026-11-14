@@ -2,6 +2,7 @@
   "name": "infrasync",
   "version": "1.0.0",
   "description": "InfraSync — Offline Infrastructure Reporting & Maintenance Management System",
+  "author": "NilePixel Technologies",
   "private": true,
   "workspaces": [
     "client",

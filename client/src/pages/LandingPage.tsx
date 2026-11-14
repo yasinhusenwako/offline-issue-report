@@ -174,7 +174,7 @@ export const LandingPage: React.FC = () => {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0E2271] text-xs font-bold tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>OFFLINE-FIRST FIELD ARCHITECTURE</span>
+                <span>OFFLINE-FIRST ARCHITECTURE &bull; BUILT BY NILEPIXEL TECHNOLOGIES</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 leading-[1.12]">
@@ -526,8 +526,13 @@ export const LandingPage: React.FC = () => {
             <Link to="/login" className="hover:text-white transition-colors">Sign In</Link>
           </div>
 
-          <div>
-            &copy; {new Date().getFullYear()} InfraSync Field Mesh System. All rights reserved.
+          <div className="text-center sm:text-right space-y-1">
+            <p className="text-slate-300 font-medium">
+              Built by <span className="text-white font-semibold">NilePixel Technologies</span>
+            </p>
+            <p className="text-slate-500">
+              &copy; {new Date().getFullYear()} NilePixel Technologies. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
